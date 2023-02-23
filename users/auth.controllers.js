@@ -1,4 +1,4 @@
-const User = require('../models/User.model');
+const User = require('./User.model');
 const { BadRequest, Unauthorized } = require('../errors');
 
 const signup = async (req, res) => {
