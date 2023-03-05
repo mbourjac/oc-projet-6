@@ -1,18 +1,17 @@
 const { HttpError } = require('../errors');
 
-const errorHandler = (err, req, res, next) => {
-	if (err instanceof HttpError) {
-		return res.status(err.statusCode).json({
-			name: err.name,
-			status: err.statusCode,
-			message: err.message,
-			stack: err.stack,
-		});
+const errorHandler = (error, req, res, next) => {
+	if (error instanceof HttpError) {
+		console.error(error);
+		return res.status(error.statusCode).json({ error });
 	}
 
-	return res.status(500).json({
-		message: err.message ?? 'Something went wrong, try again later',
-	});
+	if (error.name === 'ValidationError' || error.name === 'CastError') {
+		console.error(error);
+		return res.status(400).json({ error });
+	}
+
+	next(error);
 };
 
 module.exports = errorHandler;
