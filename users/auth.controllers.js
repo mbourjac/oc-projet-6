@@ -1,7 +1,7 @@
 const User = require('./User.model');
 const { BadRequest, Unauthorized } = require('../errors');
 
-const signup = async (req, res) => {
+const signup = async (req, res, next) => {
 	try {
 		const { email, password } = req.body;
 
@@ -11,7 +11,7 @@ const signup = async (req, res) => {
 			message: 'Your account has been successfully created',
 		});
 	} catch (error) {
-		res.status(400).json({ error });
+		next(error);
 	}
 };
 
@@ -20,30 +20,26 @@ const login = async (req, res, next) => {
 		const { email, password } = req.body;
 
 		if (!email || !password) {
-			return next(new BadRequest('Please provide email and password'));
+			throw new BadRequest('Please provide email and password');
 		}
 
 		const user = await User.findOne({ email });
 
 		if (!user) {
-			return next(
-				new Unauthorized('Please provide valid email and password')
-			);
+			throw new Unauthorized('Please provide valid email and password');
 		}
 
 		const isPasswordCorrect = await user.comparePassword(password);
 
 		if (!isPasswordCorrect) {
-			return next(
-				new Unauthorized('Please provide valid email and password')
-			);
+			throw new Unauthorized('Please provide valid email and password');
 		}
 
 		const token = user.createJWT();
 
 		res.status(200).json({ userId: user._id, token });
 	} catch (error) {
-		res.status(500).json({ error });
+		next(error);
 	}
 };
 
