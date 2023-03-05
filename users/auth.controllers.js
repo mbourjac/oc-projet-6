@@ -1,5 +1,5 @@
 const User = require('./User.model');
-const { BadRequest, Unauthorized } = require('../errors');
+const { Unauthorized } = require('../errors');
 
 const signup = async (req, res, next) => {
 	try {
@@ -18,11 +18,6 @@ const signup = async (req, res, next) => {
 const login = async (req, res, next) => {
 	try {
 		const { email, password } = req.body;
-
-		if (!email || !password) {
-			throw new BadRequest('Please provide email and password');
-		}
-
 		const user = await User.findOne({ email });
 
 		if (!user) {
