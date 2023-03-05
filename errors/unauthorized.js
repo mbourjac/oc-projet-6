@@ -2,8 +2,7 @@ const HttpError = require('./http-error');
 
 class Unauthorized extends HttpError {
 	constructor(message) {
-		super(message);
-		this.statusCode = 401;
+		super(message, 401);
 	}
 }
 
