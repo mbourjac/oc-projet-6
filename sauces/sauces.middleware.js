@@ -1,5 +1,5 @@
 const Sauce = require('./Sauce.model');
-const { NotFound } = require('../errors');
+const { Unauthorized, NotFound } = require('../errors');
 
 const findSauceOrThrow = async (req, res, next) => {
 	try {
@@ -18,4 +18,21 @@ const findSauceOrThrow = async (req, res, next) => {
 	}
 };
 
-module.exports = { findSauceOrThrow };
+const canManageSauce = async (req, res, next) => {
+	try {
+		const { sauce } = req;
+		const { userId } = req.user;
+
+		if (!sauce.userId.equals(userId)) {
+			throw new Unauthorized(
+				'You are not authorized to perfom this action'
+			);
+		}
+
+		next();
+	} catch (error) {
+		next(error);
+	}
+};
+
+module.exports = { findSauceOrThrow, canManageSauce };
