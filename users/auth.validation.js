@@ -1,6 +1,6 @@
 const { body } = require('express-validator');
 
-const validateSignup = [
+const validateSignupData = [
 	body('email')
 		.exists()
 		.withMessage('Email field is required')
@@ -31,7 +31,7 @@ const validateSignup = [
 		),
 ];
 
-const validateLogin = [
+const validateLoginData = [
 	body('email')
 		.exists()
 		.withMessage('Email field is required')
@@ -49,6 +49,6 @@ const validateLogin = [
 ];
 
 module.exports = {
-	validateSignup,
-	validateLogin,
+	validateSignupData,
+	validateLoginData,
 };
