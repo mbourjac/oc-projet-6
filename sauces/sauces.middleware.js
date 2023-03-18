@@ -22,10 +22,11 @@ const canManageSauce = async (req, res, next) => {
 	try {
 		const { sauce } = req;
 		const { userId } = req.user;
+		const action = req.method === 'PUT' ? 'update' : 'delete';
 
 		if (!sauce.userId.equals(userId)) {
 			throw new Unauthorized(
-				'You are not authorized to perfom this action'
+				`You are not authorized to ${action} this sauce`
 			);
 		}
 
