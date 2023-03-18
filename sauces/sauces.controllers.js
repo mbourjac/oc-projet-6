@@ -99,59 +99,64 @@ const updateLikeStatus = async (req, res, next) => {
 	try {
 		const { sauce } = req;
 		const { userId } = req.user;
-		const { like } = req.body;
+		const { like: status } = req.body;
 
-		const isLiked = sauce.usersLiked.includes(userId);
-		const isDisliked = sauce.usersDisliked.includes(userId);
+		const LIKE = {
+			counter: 'likes',
+			users: 'usersLiked',
+			action: 'liked',
+		};
+		const DISLIKE = {
+			counter: 'dislikes',
+			users: 'usersDisliked',
+			action: 'disliked',
+		};
 
-		if (like === 1) {
-			if (isLiked) {
-				throw new BadRequest('User has already liked the sauce');
+		const getCurrentStatus = () => {
+			const isLiked = sauce.usersLiked.includes(userId);
+			const isDisliked = sauce.usersDisliked.includes(userId);
+
+			return isLiked ? LIKE : isDisliked ? DISLIKE : null;
+		};
+
+		const updateCurrentStatus = ({ counter, users }) => {
+			sauce[counter]--;
+			sauce[users] = sauce[users].filter((id) => !id.equals(userId));
+		};
+
+		const setNewStatus = ({ counter, users, action }) => {
+			if (sauce[users].includes(userId)) {
+				throw new BadRequest(`User has already ${action} this sauce`);
 			}
 
-			sauce.likes++;
-			sauce.usersLiked.push(userId);
+			const currentStatus = getCurrentStatus();
 
-			if (isDisliked) {
-				sauce.dislikes--;
-				sauce.usersDisliked = sauce.usersDisliked.filter(
-					(id) => !id.equals(userId)
-				);
-			}
-		}
-
-		if (like === -1) {
-			if (isDisliked) {
-				throw new BadRequest('User has already disliked the sauce');
+			if (currentStatus) {
+				updateCurrentStatus(currentStatus);
 			}
 
-			sauce.dislikes++;
-			sauce.usersDisliked.push(userId);
+			sauce[counter]++;
+			sauce[users].push(userId);
+		};
 
-			if (isLiked) {
-				sauce.likes--;
-				sauce.usersLiked = sauce.usersLiked.filter(
-					(id) => !id.equals(userId)
-				);
-			}
-		}
+		switch (status) {
+			case 1:
+				setNewStatus(LIKE);
+				break;
+			case -1:
+				setNewStatus(DISLIKE);
+				break;
+			case 0:
+				const currentStatus = getCurrentStatus();
 
-		if (like === 0) {
-			if (isLiked) {
-				sauce.likes--;
-				sauce.usersLiked = sauce.usersLiked.filter(
-					(id) => !id.equals(userId)
-				);
-			} else if (isDisliked) {
-				sauce.dislikes--;
-				sauce.usersDisliked = sauce.usersDisliked.filter(
-					(id) => !id.equals(userId)
-				);
-			} else {
-				throw new BadRequest(
-					"User hasn't previously liked / disliked the sauce"
-				);
-			}
+				if (!currentStatus) {
+					throw new BadRequest(
+						"User hasn't previously set this sauce's like status"
+					);
+				}
+
+				updateCurrentStatus(currentStatus);
+				break;
 		}
 
 		await sauce.save();
