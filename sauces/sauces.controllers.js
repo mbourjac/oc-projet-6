@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Sauce = require('./Sauce.model');
 const { unlink } = require('fs/promises');
 const { BadRequest } = require('../errors');
@@ -75,16 +76,22 @@ const updateSauce = async (req, res, next) => {
 };
 
 const deleteSauce = async (req, res, next) => {
+	const session = await mongoose.startSession();
+	session.startTransaction();
 	try {
 		const { sauce } = req;
 		const filename = sauce.imageUrl.split('/').pop();
 
+		await sauce.deleteOne({ session });
 		await unlink(`images/${filename}`);
-		await sauce.deleteOne();
+		await session.commitTransaction();
 
 		res.status(200).json({ message: 'Sauce deleted' });
 	} catch (error) {
+		await session.abortTransaction();
 		next(error);
+	} finally {
+		session.endSession();
 	}
 };
 
