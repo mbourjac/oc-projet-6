@@ -28,6 +28,9 @@ const fileFilter = (req, file, callback) => {
 const multerSetup = multer({
 	fileFilter,
 	storage,
+	limits: {
+		fileSize: 1024 * 1024,
+	},
 }).single('image');
 
 module.exports = multerSetup;
