@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
-const Sauce = require('./Sauce.model');
 const { unlink } = require('fs/promises');
-const { BadRequest } = require('../errors');
+const Sauce = require('./Sauce.model');
+const {
+	LikedSauce,
+	DislikedSauce,
+	NeutralSauce,
+} = require('./sauces.interest');
 
 const getAllSauces = async (req, res, next) => {
 	try {
@@ -101,63 +105,26 @@ const updateLikeStatus = async (req, res, next) => {
 		const { userId } = req.user;
 		const { like: status } = req.body;
 
-		const LIKE = {
-			counter: 'likes',
-			users: 'usersLiked',
-			action: 'liked',
-		};
-		const DISLIKE = {
-			counter: 'dislikes',
-			users: 'usersDisliked',
-			action: 'disliked',
-		};
+		let sauceInterest = sauce.usersLiked.includes(userId)
+			? new LikedSauce(sauce)
+			: sauce.usersDisliked.includes(userId)
+			? new DislikedSauce(sauce)
+			: new NeutralSauce(sauce);
 
-		const getCurrentStatus = () => {
-			const isLiked = sauce.usersLiked.includes(userId);
-			const isDisliked = sauce.usersDisliked.includes(userId);
+		sauceInterest =
+			status === 1
+				? sauceInterest.likeSauce(userId)
+				: status === -1
+				? sauceInterest.dislikeSauce(userId)
+				: sauceInterest.resetInterest(userId);
 
-			return isLiked ? LIKE : isDisliked ? DISLIKE : null;
-		};
+		const { likes, dislikes, usersLiked, usersDisliked } =
+			sauceInterest.sauce;
 
-		const updateCurrentStatus = ({ counter, users }) => {
-			sauce[counter]--;
-			sauce[users] = sauce[users].filter((id) => !id.equals(userId));
-		};
-
-		const setNewStatus = ({ counter, users, action }) => {
-			if (sauce[users].includes(userId)) {
-				throw new BadRequest(`User has already ${action} this sauce`);
-			}
-
-			const currentStatus = getCurrentStatus();
-
-			if (currentStatus) {
-				updateCurrentStatus(currentStatus);
-			}
-
-			sauce[counter]++;
-			sauce[users].push(userId);
-		};
-
-		switch (status) {
-			case 1:
-				setNewStatus(LIKE);
-				break;
-			case -1:
-				setNewStatus(DISLIKE);
-				break;
-			case 0:
-				const currentStatus = getCurrentStatus();
-
-				if (!currentStatus) {
-					throw new BadRequest(
-						"User hasn't previously set this sauce's like status"
-					);
-				}
-
-				updateCurrentStatus(currentStatus);
-				break;
-		}
+		sauce.likes = likes;
+		sauce.dislikes = dislikes;
+		sauce.usersLiked = usersLiked;
+		sauce.usersDisliked = usersDisliked;
 
 		await sauce.save();
 
