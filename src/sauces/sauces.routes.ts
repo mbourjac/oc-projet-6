@@ -3,7 +3,8 @@ import { multerSetup, fileCheck, dataCheck, dataSetup } from '../multer';
 import { validateSauceData, validateLikeData } from './sauces.validation.js';
 import { validationCheck } from '../middleware/validation-check.js';
 import { saucesController } from './sauces.controller.js';
-import { saucesMiddleware } from './sauces.middleware.js';
+import { authorizeUser } from './sauces.authorization';
+import { findSauceOrThrow } from './sauces.finder';
 
 export const saucesRouter = express.Router();
 
@@ -18,11 +19,7 @@ saucesRouter.post(
   validationCheck,
   saucesController.createSauce
 );
-saucesRouter.get(
-  '/:id',
-  saucesMiddleware.findSauceOrThrow,
-  saucesController.getSauce
-);
+saucesRouter.get('/:id', findSauceOrThrow, saucesController.getSauce);
 saucesRouter.put(
   '/:id',
   multerSetup,
@@ -30,20 +27,20 @@ saucesRouter.put(
   dataSetup,
   validateSauceData,
   validationCheck,
-  saucesMiddleware.findSauceOrThrow,
-  saucesMiddleware.authorizeUser,
+  findSauceOrThrow,
+  authorizeUser,
   saucesController.updateSauce
 );
 saucesRouter.delete(
   '/:id',
-  saucesMiddleware.findSauceOrThrow,
-  saucesMiddleware.authorizeUser,
+  findSauceOrThrow,
+  authorizeUser,
   saucesController.deleteSauce
 );
 saucesRouter.post(
   '/:id/like',
   validateLikeData,
   validationCheck,
-  saucesMiddleware.findSauceOrThrow,
+  findSauceOrThrow,
   saucesController.updateLikeStatus
 );
