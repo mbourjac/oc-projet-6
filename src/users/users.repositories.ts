@@ -7,6 +7,38 @@ export interface UsersRepository {
   createUser(userData: IValidateUser): Promise<IUser>;
 }
 
+export class MockUsersRepository implements UsersRepository {
+  private constructor(private users: IUser[]) {}
+
+  static init(): MockUsersRepository {
+    return new MockUsersRepository([]);
+  }
+
+  withUsers(users: IUser[]): MockUsersRepository {
+    this.users = users;
+    return this;
+  }
+
+  async getUser(email: string): Promise<IUser | null> {
+    const user = this.users.find((user) => user.email === email);
+
+    return user ?? null;
+  }
+
+  async createUser(userData: IValidateUser): Promise<IUser> {
+    const id = Math.random().toString(36).slice(2, 7);
+
+    const user = {
+      ...userData,
+      id,
+    };
+
+    this.users = [...this.users, user];
+
+    return user;
+  }
+}
+
 class MongoUsersRepository implements UsersRepository {
   convertToMongoDocument({ id, email, password }: IUser) {
     const rawDocument = {
