@@ -12,7 +12,7 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true,
-    match: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])/,
+    match: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
     minLength: 8,
   },
 });
