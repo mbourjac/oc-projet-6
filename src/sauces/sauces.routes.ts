@@ -15,10 +15,10 @@ import {
   updateLikeStatus,
 } from './sauces.controllers.js';
 
-const router = express.Router();
+const saucesRouter = express.Router();
 
-router.get('/', getAllSauces);
-router.post(
+saucesRouter.get('/', getAllSauces);
+saucesRouter.post(
   '/',
   multerSetup,
   fileCheck,
@@ -28,8 +28,8 @@ router.post(
   validationCheck,
   createSauce
 );
-router.get('/:id', findSauceOrThrow, getSauce);
-router.put(
+saucesRouter.get('/:id', findSauceOrThrow, getSauce);
+saucesRouter.put(
   '/:id',
   multerSetup,
   dataCheck,
@@ -40,8 +40,8 @@ router.put(
   canManageSauce,
   updateSauce
 );
-router.delete('/:id', findSauceOrThrow, canManageSauce, deleteSauce);
-router.post(
+saucesRouter.delete('/:id', findSauceOrThrow, canManageSauce, deleteSauce);
+saucesRouter.post(
   '/:id/like',
   validateLikeData,
   validationCheck,
@@ -49,4 +49,4 @@ router.post(
   updateLikeStatus
 );
 
-export { router };
+export { saucesRouter };
