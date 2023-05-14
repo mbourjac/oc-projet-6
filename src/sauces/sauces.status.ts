@@ -1,95 +1,100 @@
 import { BadRequest } from '../errors';
+import { ISauce } from './sauces.types.js';
 
-class AbstractSauceInterest {
-  constructor(sauce) {
-    this.sauce = sauce;
+interface ISauceStatus {
+  resetInterest(userId: string): NeutralSauce | never;
+  likeSauce(userId: string): NeutralSauce | LikedSauce;
+  dislikeSauce(userId: string): NeutralSauce | DislikedSauce;
+  addLikerUser(userId: string): void;
+  addDislikerUser(userId: string): void;
+  removeLikerUser(userId: string): void;
+  removeDislikerUser(userId: string): void;
+}
+
+export abstract class SauceStatus implements ISauceStatus {
+  constructor(protected sauce: ISauce) {}
+
+  abstract resetInterest(userId: string): NeutralSauce | never;
+
+  abstract likeSauce(userId: string): NeutralSauce | LikedSauce;
+
+  abstract dislikeSauce(userId: string): NeutralSauce | DislikedSauce;
+
+  getSauce(): ISauce {
+    return this.sauce;
   }
 
-  resetInterest() {
-    throw new Error('Not implemented');
-  }
-
-  likeSauce() {
-    throw new Error('Not implemented');
-  }
-
-  dislikeSauce() {
-    throw new Error('Not implemented');
-  }
-
-  addUserAsLiker(userId) {
+  addLikerUser(userId: string): void {
     this.sauce.likes++;
     this.sauce.usersLiked.push(userId);
   }
 
-  addUserAsDisliker(userId) {
+  addDislikerUser(userId: string): void {
     this.sauce.dislikes++;
     this.sauce.usersDisliked.push(userId);
   }
 
-  removeLikerUser(userId) {
+  removeLikerUser(userId: string): void {
     this.sauce.likes--;
-    this.sauce.usersLiked = this.sauce.usersLiked.filter(
-      (id) => !id.equals(userId)
-    );
+    this.sauce.usersLiked = this.sauce.usersLiked.filter((id) => id !== userId);
   }
 
-  removeDislikerUser(userId) {
+  removeDislikerUser(userId: string): void {
     this.sauce.dislikes--;
     this.sauce.usersDisliked = this.sauce.usersDisliked.filter(
-      (id) => !id.equals(userId)
+      (id) => id !== userId
     );
   }
 }
 
-class LikedSauce extends AbstractSauceInterest {
-  resetInterest(userId) {
+export class LikedSauce extends SauceStatus {
+  resetInterest(userId: string): NeutralSauce {
     this.removeLikerUser(userId);
     return new NeutralSauce(this.sauce);
   }
 
-  likeSauce(userId) {
+  likeSauce(userId: string): NeutralSauce {
     return this.resetInterest(userId);
   }
 
-  dislikeSauce(userId) {
+  dislikeSauce(userId: string): DislikedSauce {
     this.removeLikerUser(userId);
-    this.addUserAsDisliker(userId);
+    this.addDislikerUser(userId);
     return new DislikedSauce(this.sauce);
   }
 }
 
-class DislikedSauce extends AbstractSauceInterest {
-  resetInterest(userId) {
+export class NeutralSauce extends SauceStatus {
+  resetInterest(userId: string): never {
+    throw new BadRequest(
+      `User ${userId} hasn't previously set this sauce's like status`
+    );
+  }
+
+  likeSauce(userId: string): LikedSauce {
+    this.addLikerUser(userId);
+    return new LikedSauce(this.sauce);
+  }
+
+  dislikeSauce(userId: string): DislikedSauce {
+    this.addDislikerUser(userId);
+    return new DislikedSauce(this.sauce);
+  }
+}
+
+export class DislikedSauce extends SauceStatus {
+  resetInterest(userId: string): NeutralSauce {
     this.removeDislikerUser(userId);
     return new NeutralSauce(this.sauce);
   }
 
-  likeSauce(userId) {
+  likeSauce(userId: string): LikedSauce {
     this.removeDislikerUser(userId);
-    this.addUserAsLiker(userId);
+    this.addLikerUser(userId);
     return new LikedSauce(this.sauce);
   }
 
-  dislikeSauce(userId) {
+  dislikeSauce(userId: string): NeutralSauce {
     return this.resetInterest(userId);
   }
 }
-
-class NeutralSauce extends AbstractSauceInterest {
-  resetInterest() {
-    throw new BadRequest("User hasn't previously set this sauce's like status");
-  }
-
-  likeSauce(userId) {
-    this.addUserAsLiker(userId);
-    return new LikedSauce(this.sauce);
-  }
-
-  dislikeSauce(userId) {
-    this.addUserAsDisliker(userId);
-    return new DislikedSauce(this.sauce);
-  }
-}
-
-export { LikedSauce, DislikedSauce, NeutralSauce };
