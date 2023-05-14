@@ -1,23 +1,13 @@
 import express from 'express';
 import { multerSetup, fileCheck, dataCheck, dataSetup } from '../multer';
-import { findSauceOrThrow, canManageSauce } from './sauces.middleware.js';
-import {
-  validateSauceData,
-  validateLikeData,
-  validationCheck,
-} from './sauces.validation.js';
-import {
-  getAllSauces,
-  createSauce,
-  getSauce,
-  updateSauce,
-  deleteSauce,
-  updateLikeStatus,
-} from './sauces.controllers.js';
+import { validateSauceData, validateLikeData } from './sauces.validation.js';
+import { validationCheck } from '../middleware/validation-check.js';
+import { saucesController } from './sauces.controller.js';
+import { saucesMiddleware } from './sauces.middleware.js';
 
-const saucesRouter = express.Router();
+export const saucesRouter = express.Router();
 
-saucesRouter.get('/', getAllSauces);
+saucesRouter.get('/', saucesController.getAllSauces);
 saucesRouter.post(
   '/',
   multerSetup,
@@ -26,9 +16,13 @@ saucesRouter.post(
   dataSetup,
   validateSauceData,
   validationCheck,
-  createSauce
+  saucesController.createSauce
 );
-saucesRouter.get('/:id', findSauceOrThrow, getSauce);
+saucesRouter.get(
+  '/:id',
+  saucesMiddleware.findSauceOrThrow,
+  saucesController.getSauce
+);
 saucesRouter.put(
   '/:id',
   multerSetup,
@@ -36,17 +30,20 @@ saucesRouter.put(
   dataSetup,
   validateSauceData,
   validationCheck,
-  findSauceOrThrow,
-  canManageSauce,
-  updateSauce
+  saucesMiddleware.findSauceOrThrow,
+  saucesMiddleware.canManageSauce,
+  saucesController.updateSauce
 );
-saucesRouter.delete('/:id', findSauceOrThrow, canManageSauce, deleteSauce);
+saucesRouter.delete(
+  '/:id',
+  saucesMiddleware.findSauceOrThrow,
+  saucesMiddleware.canManageSauce,
+  saucesController.deleteSauce
+);
 saucesRouter.post(
   '/:id/like',
   validateLikeData,
   validationCheck,
-  findSauceOrThrow,
-  updateLikeStatus
+  saucesMiddleware.findSauceOrThrow,
+  saucesController.updateLikeStatus
 );
-
-export { saucesRouter };
