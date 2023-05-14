@@ -1,37 +1,47 @@
-import { Sauce } from './Sauce.model.js';
-import { Unauthorized, NotFound } from '../errors';
+import { RequestHandler } from 'express';
+import { SaucesService } from './sauces.service.js';
+import { sauceDependencies } from './sauces.dependencies.js';
+import { IProvideSauceData } from './sauces.types.js';
+import { ITypeRequestLocals } from '../request/request.types.js';
+import { IAuthenticateUser } from '../authentication/authentication.types.js';
+import { Forbidden } from '../errors';
 
-const findSauceOrThrow = async (req, res, next) => {
-  try {
-    const sauceId = req.params.id;
-    const sauce = await Sauce.findById(sauceId);
+class SaucesMiddleware {
+  constructor(private readonly saucesService: SaucesService) {}
 
-    if (!sauce) {
-      throw new NotFound(`No sauce with id ${sauceId}`);
+  findSauceOrThrow: RequestHandler = async (
+    req: ITypeRequestLocals<Partial<IProvideSauceData>>,
+    res,
+    next
+  ): Promise<void> => {
+    try {
+      const sauceId = req.params.id;
+      const sauce = await this.saucesService.findSauceOrThrow(sauceId);
+
+      req.locals.sauce = sauce;
+
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  canManageSauce: RequestHandler = (
+    req: ITypeRequestLocals<IAuthenticateUser & IProvideSauceData>,
+    res,
+    next
+  ): void => {
+    const { userId, sauce } = req.locals;
+    const operation = req.method === 'PUT' ? 'update' : 'delete';
+
+    if (sauce.userId !== userId) {
+      throw new Forbidden(`You are not authorized to ${operation} this sauce`);
     }
 
-    req.sauce = sauce;
-
     next();
-  } catch (error) {
-    next(error);
-  }
-};
+  };
+}
 
-const canManageSauce = async (req, res, next) => {
-  try {
-    const { sauce } = req;
-    const { userId } = req.user;
-    const action = req.method === 'PUT' ? 'update' : 'delete';
-
-    if (!sauce.userId.equals(userId)) {
-      throw new Unauthorized(`You are not authorized to ${action} this sauce`);
-    }
-
-    next();
-  } catch (error) {
-    next(error);
-  }
-};
-
-export { findSauceOrThrow, canManageSauce };
+export const saucesMiddleware = new SaucesMiddleware(
+  SaucesService.getInstance(sauceDependencies)
+);
