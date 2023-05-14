@@ -22,6 +22,7 @@ module.exports = {
     'prettier/prettier': 'error',
     '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/no-empty-function': 'off',
+    'import/prefer-default-export': 'off',
     'no-alert': 'off',
     'no-console': 'off',
     'default-case': 'off',
