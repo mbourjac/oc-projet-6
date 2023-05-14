@@ -1,24 +1,24 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
-import { authorizeUser } from './middleware/authorization.js';
+import { authenticateUser } from './authentication/authentication.middleware.js';
 import {
   fileErrorHandler,
   httpErrorHandler,
   mongooseErrorHandler,
   multerErrorHandler,
-} from './middleware/error-handlers.js';
-import { router as authRouter } from './users/auth.routes.js';
-import { router as saucesRouter } from './sauces/sauces.routes.js';
+} from './errors/errors.handlers.js';
+import { authRouter } from './users/users.routes.js';
+import { saucesRouter } from './sauces/sauces.routes.js';
 
-const app = express();
+export const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, '..', 'images')));
 
 app.use('/api/auth', authRouter);
-app.use('/api/sauces', authorizeUser, saucesRouter);
+app.use('/api/sauces', authenticateUser, saucesRouter);
 
 app.use(
   fileErrorHandler,
@@ -26,5 +26,3 @@ app.use(
   mongooseErrorHandler,
   multerErrorHandler
 );
-
-export { app };
