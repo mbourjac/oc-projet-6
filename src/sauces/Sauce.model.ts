@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
+import { Schema, Types, model } from 'mongoose';
 
-const sauceSchema = new mongoose.Schema({
+const sauceSchema = new Schema({
   userId: {
-    type: mongoose.Types.ObjectId,
+    type: Types.ObjectId,
     ref: 'User',
     required: true,
   },
@@ -49,7 +49,7 @@ const sauceSchema = new mongoose.Schema({
   usersLiked: {
     type: [
       {
-        type: mongoose.Types.ObjectId,
+        type: Types.ObjectId,
         ref: 'User',
       },
     ],
@@ -57,13 +57,13 @@ const sauceSchema = new mongoose.Schema({
   usersDisliked: {
     type: [
       {
-        type: mongoose.Types.ObjectId,
+        type: Types.ObjectId,
         ref: 'User',
       },
     ],
   },
 });
 
-const Sauce = mongoose.model('Sauce', sauceSchema);
+const Sauce = model('Sauce', sauceSchema);
 
 export { Sauce };
