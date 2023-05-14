@@ -6,6 +6,26 @@ export interface IValidateSauce {
   heat: number;
 }
 
+export interface ICreateSauce extends IValidateSauce {
+  userId: string;
+  imageUrl: URL;
+}
+
+export interface IUpdateSauce extends IValidateSauce {
+  imageUrl: URL | undefined;
+}
+
+export interface IUpdateSauceStatus {
+  likes: number;
+  dislikes: number;
+  usersLiked: string[];
+  usersDisliked: string[];
+}
+
+export interface ISauce extends ICreateSauce, IUpdateSauceStatus {
+  _id: string;
+}
+
 export interface IProvideFileData {
   filePath: string;
 }
