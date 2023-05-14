@@ -1,41 +1,47 @@
-import { User } from './User.model.js';
-import { Unauthorized } from '../errors';
+import { RequestHandler } from 'express';
+import { IValidateUser } from './users.types.js';
+import { UsersService } from './users.service.js';
+import { usersDependencies } from './users.dependencies.js';
+import { AuthenticationService } from '../authentication/authentication.service.js';
+import { authenticationDependencies } from '../authentication/authentication.dependencies.js';
 
-const signup = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
+class UsersController {
+  constructor(
+    private readonly userService: UsersService,
+    private readonly authenticationService: AuthenticationService
+  ) {}
 
-    await User.create({ email, password });
+  signup: RequestHandler = async (req, res, next): Promise<void> => {
+    try {
+      const { email, password }: IValidateUser = req.body;
 
-    res.status(201).json({
-      message: 'Your account has been successfully created',
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+      await this.userService.signupUser({ email, password });
 
-const login = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      throw new Unauthorized('Please provide valid email and password');
+      res.status(201).json({
+        message: 'Your account has been successfully created',
+      });
+    } catch (error) {
+      next(error);
     }
+  };
 
-    const isPasswordCorrect = await user.comparePassword(password);
+  login: RequestHandler = async (req, res, next): Promise<void> => {
+    try {
+      const { email, password }: IValidateUser = req.body;
+      const userId = await this.userService.loginUser({
+        email,
+        password,
+      });
+      const token = this.authenticationService.createToken(userId);
 
-    if (!isPasswordCorrect) {
-      throw new Unauthorized('Please provide valid email and password');
+      res.status(200).json({ userId, token });
+    } catch (error) {
+      next(error);
     }
+  };
+}
 
-    const token = user.createJWT();
-
-    res.status(200).json({ userId: user._id, token });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export { signup, login };
+export const usersController = new UsersController(
+  UsersService.getInstance(usersDependencies),
+  AuthenticationService.getInstance(authenticationDependencies)
+);
