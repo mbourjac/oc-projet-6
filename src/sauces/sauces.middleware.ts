@@ -26,7 +26,7 @@ class SaucesMiddleware {
     }
   };
 
-  canManageSauce: RequestHandler = (
+  authorizeUser: RequestHandler = (
     req: ITypeRequestLocals<IAuthenticateUser & IProvideSauceData>,
     res,
     next

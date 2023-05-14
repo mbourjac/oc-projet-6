@@ -31,13 +31,13 @@ saucesRouter.put(
   validateSauceData,
   validationCheck,
   saucesMiddleware.findSauceOrThrow,
-  saucesMiddleware.canManageSauce,
+  saucesMiddleware.authorizeUser,
   saucesController.updateSauce
 );
 saucesRouter.delete(
   '/:id',
   saucesMiddleware.findSauceOrThrow,
-  saucesMiddleware.canManageSauce,
+  saucesMiddleware.authorizeUser,
   saucesController.deleteSauce
 );
 saucesRouter.post(
