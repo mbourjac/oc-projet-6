@@ -1,6 +1,16 @@
 import { Schema, Types, model } from 'mongoose';
+import { IValidateSauce } from './sauces.types.js';
 
-const sauceSchema = new Schema({
+export interface IMongoSauce extends IValidateSauce {
+  userId: Types.ObjectId;
+  imageUrl: string;
+  likes: number;
+  dislikes: number;
+  usersLiked: Types.Array<Types.ObjectId>;
+  usersDisliked: Types.Array<Types.ObjectId>;
+}
+
+const sauceSchema = new Schema<IMongoSauce>({
   userId: {
     type: Schema.Types.ObjectId,
     ref: 'User',
@@ -56,6 +66,7 @@ const sauceSchema = new Schema({
       },
     ],
     required: true,
+    default: [],
   },
   usersDisliked: {
     type: [
@@ -65,9 +76,8 @@ const sauceSchema = new Schema({
       },
     ],
     required: true,
+    default: [],
   },
 });
 
-const Sauce = model('Sauce', sauceSchema);
-
-export { Sauce };
+export const Sauce = model<IMongoSauce>('Sauce', sauceSchema);
