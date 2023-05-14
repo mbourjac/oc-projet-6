@@ -38,11 +38,13 @@ const sauceSchema = new Schema({
   },
   likes: {
     type: Number,
+    required: true,
     default: 0,
     min: 0,
   },
   dislikes: {
     type: Number,
+    required: true,
     default: 0,
     min: 0,
   },
@@ -53,6 +55,7 @@ const sauceSchema = new Schema({
         ref: 'User',
       },
     ],
+    required: true,
   },
   usersDisliked: {
     type: [
@@ -61,6 +64,7 @@ const sauceSchema = new Schema({
         ref: 'User',
       },
     ],
+    required: true,
   },
 });
 
