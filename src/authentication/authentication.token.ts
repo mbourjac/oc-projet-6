@@ -5,6 +5,33 @@ export interface TokenHandler {
   getPayload(token: string): unknown;
 }
 
+export class MockTokenHandler implements TokenHandler {
+  private constructor(private secretKey: string) {}
+
+  static init(): MockTokenHandler {
+    return new MockTokenHandler('');
+  }
+
+  withSecretKey(secretKey: string): MockTokenHandler {
+    this.secretKey = secretKey;
+    return this;
+  }
+
+  createToken(id: string): string {
+    const token = {
+      userId: id,
+      secretKey: this.secretKey,
+      expiresIn: '24h',
+    };
+
+    return JSON.stringify(token);
+  }
+
+  getPayload(token: string): string | JwtPayload {
+    return JSON.parse(token);
+  }
+}
+
 export class JwtTokenHandler implements TokenHandler {
   private static instance: JwtTokenHandler;
   private readonly secretKey: string;
