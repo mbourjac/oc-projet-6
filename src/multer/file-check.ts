@@ -12,5 +12,7 @@ export const fileCheck: RequestHandler = (
     throw new BadRequest('Please provide an image file');
   }
 
+  req.locals.filePath = req.file.path;
+
   next();
 };
