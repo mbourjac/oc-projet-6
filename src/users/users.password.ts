@@ -8,6 +8,31 @@ export interface PasswordHasher {
   ): Promise<boolean>;
 }
 
+export class MockPasswordHasher implements PasswordHasher {
+  private constructor(private hash: string) {}
+
+  static init(): MockPasswordHasher {
+    return new MockPasswordHasher('');
+  }
+
+  withHash(hash: string): MockPasswordHasher {
+    this.hash = hash;
+    return this;
+  }
+
+  hashPassword(password: string): Promise<string> {
+    return Promise.resolve(`${this.hash}${password}`);
+  }
+
+  comparePassword(
+    candidatePassword: string,
+    password: string
+  ): Promise<boolean> {
+    const isMatch = candidatePassword === `${this.hash}${password}`;
+    return Promise.resolve(isMatch);
+  }
+}
+
 class BcryptPasswordHasher implements PasswordHasher {
   async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(10);
