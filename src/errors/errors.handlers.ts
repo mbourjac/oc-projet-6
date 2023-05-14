@@ -16,12 +16,12 @@ export const fileErrorHandler: ErrorRequestHandler = async (
   next(error);
 };
 
-export const httpErrorHandler: ErrorRequestHandler = async (
+export const httpErrorHandler: ErrorRequestHandler = (
   error,
   req,
   res,
   next
-): Promise<void> => {
+): void => {
   if (error instanceof HttpError) {
     console.error(error);
     res.status(error.statusCode).json({ error });
@@ -31,12 +31,12 @@ export const httpErrorHandler: ErrorRequestHandler = async (
   next(error);
 };
 
-export const mongooseErrorHandler: ErrorRequestHandler = async (
+export const mongooseErrorHandler: ErrorRequestHandler = (
   error,
   req,
   res,
   next
-): Promise<void> => {
+): void => {
   if (error.name === 'ValidationError' || error.name === 'CastError') {
     console.error(error);
     res.status(400).json({ error });
@@ -46,12 +46,12 @@ export const mongooseErrorHandler: ErrorRequestHandler = async (
   next(error);
 };
 
-export const multerErrorHandler: ErrorRequestHandler = async (
+export const multerErrorHandler: ErrorRequestHandler = (
   error,
   req,
   res,
   next
-): Promise<void> => {
+): void => {
   if (error instanceof multer.MulterError) {
     console.error(error);
     res.status(500).json({ error });
