@@ -1,7 +1,10 @@
-import multer from 'multer';
+import multer, { FileFilterCallback } from 'multer';
+import { Request } from 'express';
 import { BadRequest } from '../errors';
 
-const MIME_TYPES = {
+type FileExtension = 'jpg' | 'png';
+
+const MIME_TYPES: Record<string, FileExtension> = {
   'image/jpg': 'jpg',
   'image/jpeg': 'jpg',
   'image/png': 'png',
@@ -12,12 +15,16 @@ const storage = multer.diskStorage({
     callback(null, 'images');
   },
   filename: (req, file, callback) => {
-    const extension = MIME_TYPES[file.mimetype];
+    const extension: FileExtension = MIME_TYPES[file.mimetype];
     callback(null, `${file.fieldname}-${Date.now()}.${extension}`);
   },
 });
 
-const fileFilter = (req, file, callback) => {
+const fileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  callback: FileFilterCallback
+): void => {
   if (file.mimetype in MIME_TYPES) {
     callback(null, true);
   } else {
@@ -25,12 +32,10 @@ const fileFilter = (req, file, callback) => {
   }
 };
 
-const multerSetup = multer({
+export const multerSetup = multer({
   fileFilter,
   storage,
   limits: {
     fileSize: 1024 * 1024,
   },
 }).single('image');
-
-export { multerSetup };
