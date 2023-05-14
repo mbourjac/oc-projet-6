@@ -33,3 +33,9 @@ export interface IProvideFileData {
 export interface IParseSauce {
   sauce?: string;
 }
+
+export enum SauceInterest {
+  Dislike = -1,
+  Neutral,
+  Like,
+}
