@@ -1,23 +1,24 @@
-import jwt from 'jsonwebtoken';
-import { Unauthorized } from '../errors';
+import { RequestHandler } from 'express';
+import { AuthenticationService } from './authentication.service.js';
+import { authenticationDependencies } from './authentication.dependencies.js';
+import { ITypeRequestLocals } from '../request/request.types.js';
+import { IAuthenticateUser } from './authentication.types.js';
 
-const authorizeUser = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer')) {
-    throw new Unauthorized('Invalid authorization header');
-  }
-
-  const token = authHeader.split(' ')[1];
-
+export const authenticateUser: RequestHandler = (
+  req: ITypeRequestLocals<Partial<IAuthenticateUser>>,
+  res,
+  next
+): void => {
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const authHeader = req.headers.authorization;
+    const authenticationService = AuthenticationService.getInstance(
+      authenticationDependencies
+    );
+    const userId = authenticationService.authenticateUser(authHeader);
 
-    req.user = { userId: payload.userId };
+    req.locals = { userId };
     next();
   } catch (error) {
     res.status(401).json({ error });
   }
 };
-
-export { authorizeUser };
