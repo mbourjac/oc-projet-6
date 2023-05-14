@@ -1,7 +1,8 @@
 import { Schema, model } from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
+import { IValidateUser } from './users.types.js';
 
-const userSchema = new Schema({
+const userSchema = new Schema<IValidateUser>({
   email: {
     type: String,
     required: true,
@@ -19,6 +20,4 @@ const userSchema = new Schema({
 
 userSchema.plugin(uniqueValidator);
 
-const User = model('User', userSchema);
-
-export { User };
+export const User = model<IValidateUser>('User', userSchema);
