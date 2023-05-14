@@ -1,7 +1,6 @@
 import { body } from 'express-validator';
-import { validationCheck } from '../middleware/validation-check.js';
 
-const validateSignupData = [
+export const validateSignupData = [
   body('email')
     .exists()
     .withMessage('Email field is required')
@@ -32,7 +31,7 @@ const validateSignupData = [
     ),
 ];
 
-const validateLoginData = [
+export const validateLoginData = [
   body('email')
     .exists()
     .withMessage('Email field is required')
@@ -48,5 +47,3 @@ const validateLoginData = [
     .isString()
     .withMessage('This value must be a string'),
 ];
-
-export { validateSignupData, validateLoginData, validationCheck };
