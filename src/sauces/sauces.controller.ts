@@ -1,136 +1,142 @@
-import mongoose from 'mongoose';
-import { unlink } from 'fs/promises';
-import { Sauce } from './Sauce.model.js';
-import { LikedSauce, DislikedSauce, NeutralSauce } from './sauces.interest.js';
+import { RequestHandler } from 'express';
+import {
+  IProvideSauceData,
+  IProvideSauceInterest,
+  IValidateSauce,
+  IProvideFileData,
+} from './sauces.types.js';
+import { SaucesService } from './sauces.service.js';
+import { sauceDependencies } from './sauces.dependencies.js';
+import {
+  ITypeRequestBodyAndLocals,
+  ITypeRequestLocals,
+} from '../request/request.types.js';
+import { IAuthenticateUser } from '../authentication/authentication.types.js';
 
-const getAllSauces = async (req, res, next) => {
-  try {
-    const sauces = await Sauce.find();
+class SaucesController {
+  constructor(private readonly saucesService: SaucesService) {}
 
-    res.status(200).json(sauces);
-  } catch (error) {
-    next(error);
-  }
-};
+  getAllSauces: RequestHandler = async (req, res, next): Promise<void> => {
+    try {
+      const sauces = await this.saucesService.getAllSauces();
 
-const createSauce = async (req, res, next) => {
-  try {
-    const { name, manufacturer, description, mainPepper, heat } = req.body;
-    const sauce = await Sauce.create({
-      name,
-      manufacturer,
-      description,
-      mainPepper,
-      heat,
-      userId: req.user.userId,
-      imageUrl: new URL(req.file.path, `${req.protocol}://${req.get('host')}`),
-    });
+      res.status(200).json(sauces);
+    } catch (error) {
+      next(error);
+    }
+  };
 
-    res.status(201).json({ message: 'Sauce created', sauce });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const getSauce = async (req, res, next) => {
-  try {
-    const { sauce } = req;
-
-    res.status(200).json(sauce);
-  } catch (error) {
-    next(error);
-  }
-};
-
-const updateSauce = async (req, res, next) => {
-  try {
-    const { sauce } = req;
-    const { name, manufacturer, description, mainPepper, heat } = req.body;
-
-    sauce.name = name;
-    sauce.manufacturer = manufacturer;
-    sauce.description = description;
-    sauce.mainPepper = mainPepper;
-    sauce.heat = heat;
-
-    if (req.file) {
-      const filename = sauce.imageUrl.split('/').pop();
-
-      await unlink(`images/${filename}`);
-
-      sauce.imageUrl = new URL(
-        req.file.path,
+  createSauce: RequestHandler = async (
+    req: ITypeRequestBodyAndLocals<
+      IValidateSauce,
+      IAuthenticateUser & IProvideFileData
+    >,
+    res,
+    next
+  ): Promise<void> => {
+    try {
+      const { userId, filePath } = req.locals;
+      const { name, manufacturer, description, mainPepper, heat } = req.body;
+      const imageUrl = new URL(
+        filePath,
         `${req.protocol}://${req.get('host')}`
       );
+
+      const sauce = await this.saucesService.createSauce({
+        userId,
+        name,
+        manufacturer,
+        description,
+        mainPepper,
+        heat,
+        imageUrl,
+      });
+
+      res.status(201).json({ message: 'Sauce created', sauce });
+    } catch (error) {
+      next(error);
     }
+  };
 
-    sauce.save();
+  getSauce: RequestHandler = (
+    req: ITypeRequestLocals<IProvideSauceData>,
+    res
+  ): void => {
+    const { sauce } = req.locals;
 
-    res.status(200).json({ message: 'Sauce updated' });
-  } catch (error) {
-    next(error);
-  }
-};
+    res.status(200).json(sauce);
+  };
 
-const deleteSauce = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const { sauce } = req;
-    const filename = sauce.imageUrl.split('/').pop();
+  updateSauce: RequestHandler = async (
+    req: ITypeRequestBodyAndLocals<
+      IValidateSauce,
+      IProvideSauceData & Partial<IProvideFileData>
+    >,
+    res,
+    next
+  ): Promise<void> => {
+    try {
+      const { sauce, filePath } = req.locals;
+      const { name, manufacturer, description, mainPepper, heat } = req.body;
+      const imageUrl = filePath
+        ? new URL(filePath, `${req.protocol}://${req.get('host')}`)
+        : undefined;
 
-    await sauce.deleteOne({ session });
-    await unlink(`images/${filename}`);
-    await session.commitTransaction();
+      const updatedSauce = await this.saucesService.updateSauce(sauce, {
+        name,
+        manufacturer,
+        description,
+        mainPepper,
+        heat,
+        imageUrl,
+      });
 
-    res.status(200).json({ message: 'Sauce deleted' });
-  } catch (error) {
-    await session.abortTransaction();
-    next(error);
-  } finally {
-    session.endSession();
-  }
-};
+      res.status(200).json({ message: 'Sauce updated', updatedSauce });
+    } catch (error) {
+      next(error);
+    }
+  };
 
-const updateLikeStatus = async (req, res, next) => {
-  try {
-    const { sauce } = req;
-    const { userId } = req.user;
-    const { like: status } = req.body;
+  deleteSauce: RequestHandler = async (
+    req: ITypeRequestLocals<IProvideSauceData>,
+    res,
+    next
+  ): Promise<void> => {
+    try {
+      const { sauce } = req.locals;
 
-    let sauceInterest = sauce.usersLiked.includes(userId)
-      ? new LikedSauce(sauce)
-      : sauce.usersDisliked.includes(userId)
-      ? new DislikedSauce(sauce)
-      : new NeutralSauce(sauce);
+      this.saucesService.deleteSauce(sauce);
 
-    sauceInterest =
-      status === 1
-        ? sauceInterest.likeSauce(userId)
-        : status === -1
-        ? sauceInterest.dislikeSauce(userId)
-        : sauceInterest.resetInterest(userId);
+      res.status(200).json({ message: 'Sauce deleted' });
+    } catch (error) {
+      next(error);
+    }
+  };
 
-    const { likes, dislikes, usersLiked, usersDisliked } = sauceInterest.sauce;
+  updateLikeStatus: RequestHandler = async (
+    req: ITypeRequestBodyAndLocals<
+      IProvideSauceInterest,
+      IAuthenticateUser & IProvideSauceData
+    >,
+    res,
+    next
+  ): Promise<void> => {
+    try {
+      const { sauce, userId } = req.locals;
+      const sauceInterest = req.body.like;
+      const updatedSauce = this.saucesService.updateSauceStatus(
+        sauce,
+        userId,
+        sauceInterest
+      );
 
-    sauce.likes = likes;
-    sauce.dislikes = dislikes;
-    sauce.usersLiked = usersLiked;
-    sauce.usersDisliked = usersDisliked;
+      res.status(200).json({ message: 'Like status updated', updatedSauce });
+    } catch (error) {
+      next(error);
+    }
+  };
+}
 
-    await sauce.save();
-
-    res.status(200).json({ message: 'Like status updated' });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export {
-  getAllSauces,
-  createSauce,
-  getSauce,
-  updateSauce,
-  deleteSauce,
-  updateLikeStatus,
-};
+export const saucesController = new SaucesController(
+  SaucesService.getInstance(sauceDependencies)
+);
