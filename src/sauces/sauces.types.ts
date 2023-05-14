@@ -39,3 +39,13 @@ export enum SauceInterest {
   Neutral,
   Like,
 }
+
+export interface IProvideSauceData {
+  sauce: ISauce;
+}
+
+export interface IProvideSauceInterest {
+  like: SauceInterest;
+}
+
+export interface ISetupSauceData extends Partial<IValidateSauce>, IParseSauce {}
