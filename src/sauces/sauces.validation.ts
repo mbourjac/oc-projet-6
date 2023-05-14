@@ -1,7 +1,6 @@
 import { body } from 'express-validator';
-import { validationCheck } from '../middleware/validation-check.js';
 
-const validateSauceData = [
+export const validateSauceData = [
   body('name')
     .exists()
     .withMessage('Name field is required')
@@ -76,11 +75,9 @@ const validateSauceData = [
     .withMessage('This value is required'),
 ];
 
-const validateLikeData = body('like')
+export const validateLikeData = body('like')
   .exists()
   .withMessage('Like field is required')
   .bail()
   .isInt({ min: -1, max: 1 })
   .withMessage('This value must be a number between -1 and 1 included');
-
-export { validateSauceData, validateLikeData, validationCheck };
