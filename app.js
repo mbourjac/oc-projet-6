@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const helmet = require('helmet');
 const authorizeUser = require('./middleware/authorization');
 const {
 	fileErrorHandler,
@@ -13,6 +14,7 @@ const saucesRouter = require('./sauces/sauces.routes');
 
 const app = express();
 
+app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(cors());
 app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));
