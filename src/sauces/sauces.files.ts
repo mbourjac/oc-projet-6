@@ -1,33 +1,53 @@
-import { unlink } from 'fs/promises';
+import { unlink, readdir } from 'fs/promises';
 
 export interface FileHandler {
-  deleteFile(filename: string): Promise<void>;
+  readFiles(path: string): Promise<string[]>;
+  deleteFile(filePath: string): Promise<void>;
 }
 
 export class MockFileHandler implements FileHandler {
-  private constructor(private files: string[]) {}
+  private constructor(private files: Record<string, string[]>) {}
 
   static init(): MockFileHandler {
-    return new MockFileHandler([]);
+    return new MockFileHandler({});
   }
 
-  withFiles(files: string[]): MockFileHandler {
-    this.files = files;
+  withFiles(filePaths: string[]): MockFileHandler {
+    for (const filePath of filePaths) {
+      const [dir, file] = filePath.split('/');
+
+      this.files[dir] = [...(this.files[dir] || []), file];
+    }
+
     return this;
   }
 
-  getFiles(): string[] {
-    return this.files;
+  withException(): MockFileHandler {
+    this.deleteFile = async (filePath: string): Promise<void> => {
+      throw new Error(`Failed to delete file ${filePath}`);
+    };
+
+    return this;
   }
 
-  async deleteFile(filename: string): Promise<void> {
-    this.files = this.files.filter((file) => file !== filename);
+  async readFiles(path: string): Promise<string[]> {
+    return this.files[path];
+  }
+
+  async deleteFile(filePath: string): Promise<void> {
+    const [dir, file] = filePath.split('/');
+
+    this.files[dir] = this.files[dir].filter((filename) => filename !== file);
   }
 }
 
 class FsFileHandler implements FileHandler {
-  async deleteFile(filename: string): Promise<void> {
-    await unlink(`images/${filename}`);
+  async readFiles(path: string): Promise<string[]> {
+    return readdir(path);
+  }
+
+  async deleteFile(filePath: string): Promise<void> {
+    await unlink(filePath);
   }
 }
 
