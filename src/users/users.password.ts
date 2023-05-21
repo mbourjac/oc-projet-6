@@ -26,9 +26,9 @@ export class MockPasswordHasher implements PasswordHasher {
 
   comparePassword(
     candidatePassword: string,
-    password: string
+    hashedPassword: string
   ): Promise<boolean> {
-    const isMatch = candidatePassword === `${this.hash}${password}`;
+    const isMatch = `${this.hash}${candidatePassword}` === hashedPassword;
     return Promise.resolve(isMatch);
   }
 }
