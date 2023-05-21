@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { ITypeRequestLocals } from '../request/request.types.js';
-import { IAuthenticateUser } from '../authentication/authentication.types.js';
+import { IAuthenticateUser } from '../authn/authn.types.js';
 import { IProvideSauceData } from './sauces.types.js';
 import { Forbidden } from '../errors/errors.forbidden.js';
 

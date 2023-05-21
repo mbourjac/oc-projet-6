@@ -1,26 +1,22 @@
-import { IAuthenticationDependencies } from './authentication.dependencies.js';
-import { TokenHandler } from './authentication.token.js';
-import { IAuthenticateUser } from './authentication.types.js';
+import { IAuthnDependencies } from './authn.dependencies.js';
+import { TokenHandler } from './authn.token.js';
+import { IAuthenticateUser } from './authn.types.js';
 import { Unauthorized } from '../errors/index.js';
 
-export class AuthenticationService {
-  private static instance: AuthenticationService;
+export class AuthnService {
+  private static instance: AuthnService;
   private readonly tokenHandler: TokenHandler;
 
-  constructor({ tokenHandler }: IAuthenticationDependencies) {
+  constructor({ tokenHandler }: IAuthnDependencies) {
     this.tokenHandler = tokenHandler;
   }
 
-  static getInstance(
-    authDependencies: IAuthenticationDependencies
-  ): AuthenticationService {
-    if (!AuthenticationService.instance) {
-      AuthenticationService.instance = new AuthenticationService(
-        authDependencies
-      );
+  static getInstance(authDependencies: IAuthnDependencies): AuthnService {
+    if (!AuthnService.instance) {
+      AuthnService.instance = new AuthnService(authDependencies);
     }
 
-    return AuthenticationService.instance;
+    return AuthnService.instance;
   }
 
   createToken(userId: string): string {

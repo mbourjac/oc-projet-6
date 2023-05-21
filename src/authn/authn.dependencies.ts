@@ -1,10 +1,10 @@
-import { JwtTokenHandler, TokenHandler } from './authentication.token.js';
+import { JwtTokenHandler, TokenHandler } from './authn.token.js';
 
-export interface IAuthenticationDependencies {
+export interface IAuthnDependencies {
   tokenHandler: TokenHandler;
 }
 
-class AuthenticationDependencies implements IAuthenticationDependencies {
+class AuthnDependencies implements IAuthnDependencies {
   readonly tokenHandler: TokenHandler;
 
   constructor() {
@@ -23,4 +23,4 @@ class AuthenticationDependencies implements IAuthenticationDependencies {
   }
 }
 
-export const authenticationDependencies = new AuthenticationDependencies();
+export const authnDependencies = new AuthnDependencies();

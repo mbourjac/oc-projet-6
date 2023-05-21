@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
-import { authenticateUser } from './authentication/authentication.middleware.js';
+import { authenticateUser } from './authn/authn.middleware.js';
 import {
   fileErrorHandler,
   httpErrorHandler,

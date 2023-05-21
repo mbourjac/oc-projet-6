@@ -2,13 +2,13 @@ import { RequestHandler } from 'express';
 import { IValidateUser } from './users.types.js';
 import { UsersService } from './users.service.js';
 import { usersDependencies } from './users.dependencies.js';
-import { AuthenticationService } from '../authentication/authentication.service.js';
-import { authenticationDependencies } from '../authentication/authentication.dependencies.js';
+import { AuthnService } from '../authn/authn.service.js';
+import { authnDependencies } from '../authn/authn.dependencies.js';
 
 class UsersController {
   constructor(
     private readonly userService: UsersService,
-    private readonly authenticationService: AuthenticationService
+    private readonly authnService: AuthnService
   ) {}
 
   signup: RequestHandler = async (req, res, next): Promise<void> => {
@@ -32,7 +32,7 @@ class UsersController {
         email,
         password,
       });
-      const token = this.authenticationService.createToken(userId);
+      const token = this.authnService.createToken(userId);
 
       res.status(200).json({ userId, token });
     } catch (error) {
@@ -43,5 +43,5 @@ class UsersController {
 
 export const usersController = new UsersController(
   UsersService.getInstance(usersDependencies),
-  AuthenticationService.getInstance(authenticationDependencies)
+  AuthnService.getInstance(authnDependencies)
 );

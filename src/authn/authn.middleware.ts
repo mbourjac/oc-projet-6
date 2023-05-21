@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
-import { AuthenticationService } from './authentication.service.js';
-import { authenticationDependencies } from './authentication.dependencies.js';
+import { AuthnService } from './authn.service.js';
+import { authnDependencies } from './authn.dependencies.js';
 import { ITypeRequestLocals } from '../request/request.types.js';
-import { IAuthenticateUser } from './authentication.types.js';
+import { IAuthenticateUser } from './authn.types.js';
 
 export const authenticateUser: RequestHandler = (
   req: ITypeRequestLocals<Partial<IAuthenticateUser>>,
@@ -11,10 +11,8 @@ export const authenticateUser: RequestHandler = (
 ): void => {
   try {
     const authHeader = req.headers.authorization;
-    const authenticationService = AuthenticationService.getInstance(
-      authenticationDependencies
-    );
-    const userId = authenticationService.authenticateUser(authHeader);
+    const authnService = AuthnService.getInstance(authnDependencies);
+    const userId = authnService.authenticateUser(authHeader);
 
     req.locals = { userId };
     next();

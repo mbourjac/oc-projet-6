@@ -1,5 +1,5 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { IAuthenticateUser } from './authentication.types';
+import { IAuthenticateUser } from './authn.types';
 
 export interface TokenHandler {
   createToken(payload: IAuthenticateUser): string;

@@ -11,7 +11,7 @@ import {
   ITypeRequestBodyAndLocals,
   ITypeRequestLocals,
 } from '../request/request.types.js';
-import { IAuthenticateUser } from '../authentication/authentication.types.js';
+import { IAuthenticateUser } from '../authn/authn.types.js';
 import { formatFilePath } from '../utils/';
 
 class SaucesController {
