@@ -20,16 +20,15 @@ export class MockPasswordHasher implements PasswordHasher {
     return this;
   }
 
-  hashPassword(password: string): Promise<string> {
-    return Promise.resolve(`${this.hash}${password}`);
+  async hashPassword(password: string): Promise<string> {
+    return `${this.hash}${password}`;
   }
 
-  comparePassword(
+  async comparePassword(
     candidatePassword: string,
     hashedPassword: string
   ): Promise<boolean> {
-    const isMatch = `${this.hash}${candidatePassword}` === hashedPassword;
-    return Promise.resolve(isMatch);
+    return `${this.hash}${candidatePassword}` === hashedPassword;
   }
 }
 
