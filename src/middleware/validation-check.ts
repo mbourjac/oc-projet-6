@@ -1,13 +1,13 @@
+import { RequestHandler } from 'express';
 import { validationResult } from 'express-validator';
 
-const validationCheck = (req, res, next) => {
+export const validationCheck: RequestHandler = (req, res, next): void => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    res.status(400).json({ errors: errors.array() });
+    return;
   }
 
   next();
 };
-
-export { validationCheck };
