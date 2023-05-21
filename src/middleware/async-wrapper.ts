@@ -1,5 +1,13 @@
-const asyncWrapper = (asyncFunction) => {
-  return async (req, res, next) => {
+import { Request, Response, NextFunction } from 'express';
+
+type AsyncFunction = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void>;
+
+export const asyncWrapper = (asyncFunction: AsyncFunction): AsyncFunction => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     try {
       await asyncFunction(req, res, next);
     } catch (error) {
@@ -7,5 +15,3 @@ const asyncWrapper = (asyncFunction) => {
     }
   };
 };
-
-export { asyncWrapper };
