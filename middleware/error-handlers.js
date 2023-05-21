@@ -10,7 +10,7 @@ const fileErrorHandler = async (error, req, res, next) => {
 	next(error);
 };
 
-const httpErrorHandler = async (error, req, res, next) => {
+const httpErrorHandler = (error, req, res, next) => {
 	if (error instanceof HttpError) {
 		console.error(error);
 		return res.status(error.statusCode).json({ error });
@@ -19,7 +19,7 @@ const httpErrorHandler = async (error, req, res, next) => {
 	next(error);
 };
 
-const mongooseErrorHandler = async (error, req, res, next) => {
+const mongooseErrorHandler = (error, req, res, next) => {
 	if (error.name === 'ValidationError' || error.name === 'CastError') {
 		console.error(error);
 		return res.status(400).json({ error });
@@ -28,7 +28,7 @@ const mongooseErrorHandler = async (error, req, res, next) => {
 	next(error);
 };
 
-const multerErrorHandler = async (error, req, res, next) => {
+const multerErrorHandler = (error, req, res, next) => {
 	if (error instanceof multer.MulterError) {
 		console.error(error);
 		return res.status(500).json({ error });
