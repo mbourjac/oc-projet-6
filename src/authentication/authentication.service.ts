@@ -23,13 +23,8 @@ export class AuthenticationService {
     return AuthenticationService.instance;
   }
 
-  private isIAuthenticateUser(payload: unknown): payload is IAuthenticateUser {
-    return (
-      typeof payload === 'object' &&
-      payload !== null &&
-      'userId' in payload &&
-      typeof payload.userId === 'string'
-    );
+  createToken(userId: string): string {
+    return this.tokenHandler.createToken(userId);
   }
 
   authenticateUser(authHeader: string | undefined): string {
@@ -47,7 +42,12 @@ export class AuthenticationService {
     return payload.userId;
   }
 
-  createToken(userId: string): string {
-    return this.tokenHandler.createToken(userId);
+  private isIAuthenticateUser(payload: unknown): payload is IAuthenticateUser {
+    return (
+      typeof payload === 'object' &&
+      payload !== null &&
+      'userId' in payload &&
+      typeof payload.userId === 'string'
+    );
   }
 }
