@@ -24,7 +24,9 @@ export class AuthenticationService {
   }
 
   createToken(userId: string): string {
-    return this.tokenHandler.createToken(userId);
+    const payload = { userId };
+
+    return this.tokenHandler.createToken(payload);
   }
 
   authenticateUser(authHeader: string | undefined): string {

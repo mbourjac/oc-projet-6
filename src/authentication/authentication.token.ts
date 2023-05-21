@@ -1,7 +1,8 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { IAuthenticateUser } from './authentication.types';
 
 export interface TokenHandler {
-  createToken(identifier: string): string;
+  createToken(payload: IAuthenticateUser): string;
   getPayload(token: string): unknown;
 }
 
@@ -17,9 +18,9 @@ export class MockTokenHandler implements TokenHandler {
     return this;
   }
 
-  createToken(id: string): string {
+  createToken(payload: IAuthenticateUser): string {
     const token = {
-      userId: id,
+      payload,
       secretKey: this.secretKey,
       expiresIn: '24h',
     };
@@ -48,8 +49,8 @@ export class JwtTokenHandler implements TokenHandler {
     return JwtTokenHandler.instance;
   }
 
-  createToken(id: string): string {
-    return jwt.sign({ userId: id }, this.secretKey, {
+  createToken(payload: IAuthenticateUser): string {
+    return jwt.sign(payload, this.secretKey, {
       expiresIn: '24h',
     });
   }
