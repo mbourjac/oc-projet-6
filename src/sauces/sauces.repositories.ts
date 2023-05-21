@@ -1,5 +1,12 @@
 import { HydratedDocument, Types, startSession, ClientSession } from 'mongoose';
-import { ISauce, ICreateSauce } from './sauces.types.js';
+import {
+  ISauce,
+  ICreateSauce,
+  IUpdateSauceStatus,
+  IUpdateSauceById,
+  IProvideImageData,
+  IValidateSauce,
+} from './sauces.types.js';
 import { IMongoSauce, Sauce } from './Sauce.model.js';
 import { FileHandler } from './sauces.files.js';
 
@@ -7,8 +14,15 @@ export interface SaucesRepository {
   getSauce(sauceId: string): Promise<ISauce | null>;
   getAllSauces(): Promise<ISauce[]>;
   createSauce(sauceData: ICreateSauce): Promise<ISauce>;
-  updateSauce(sauce: ISauce): Promise<void>;
-  updateSauceWithFile(sauce: ISauce, filename: string): Promise<void>;
+  updateSauceData(sauceId: string, sauceData: IValidateSauce): Promise<ISauce>;
+  updateSauceImage(
+    sauceId: string,
+    imageData: IProvideImageData
+  ): Promise<ISauce>;
+  updateSauceStatus(
+    sauceId: string,
+    statusData: IUpdateSauceStatus
+  ): Promise<ISauce>;
   deleteSauce(sauceId: string, filePath: string): Promise<void>;
 }
 
@@ -43,23 +57,31 @@ export class MongoSaucesRepository implements SaucesRepository {
     return this.standardizeSauce(createdSauce);
   }
 
-  async updateSauce(sauce: ISauce): Promise<void> {
-    const mongoSauce = this.convertToMongoDocument(sauce);
-
-    await mongoSauce.save();
+  async updateSauceData(
+    sauceId: string,
+    sauceData: IValidateSauce
+  ): Promise<ISauce> {
+    return this.updateSauceById(sauceId, sauceData);
   }
 
-  async updateSauceWithFile(sauce: ISauce, filename: string): Promise<void> {
+  async updateSauceImage(
+    sauceId: string,
+    { origin, newFilePath, currentFilePath }: IProvideImageData
+  ): Promise<ISauce> {
     const session = await startSession();
-    const mongoSauce = this.convertToMongoDocument(sauce);
+    const imageUrl = new URL(newFilePath, origin);
+    const sauceUpdate = async () => {
+      return this.updateSauceById(sauceId, { imageUrl });
+    };
 
-    await this.performTransaction(
-      async () => {
-        await mongoSauce.save({ session });
-      },
-      session,
-      filename
-    );
+    return this.performTransaction(sauceUpdate, session, currentFilePath);
+  }
+
+  async updateSauceStatus(
+    sauceId: string,
+    statusData: IUpdateSauceStatus
+  ): Promise<ISauce> {
+    return this.updateSauceById(sauceId, statusData);
   }
 
   async deleteSauce(sauceId: string, filePath: string): Promise<void> {
