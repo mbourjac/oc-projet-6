@@ -12,6 +12,7 @@ import {
   ITypeRequestLocals,
 } from '../request/request.types.js';
 import { IAuthenticateUser } from '../authentication/authentication.types.js';
+import { formatFilePath } from '../utils/';
 
 class SaucesController {
   constructor(private readonly saucesService: SaucesService) {}
@@ -76,20 +77,19 @@ class SaucesController {
     next
   ): Promise<void> => {
     try {
-      const { sauce, filePath } = req.locals;
-      const { name, manufacturer, description, mainPepper, heat } = req.body;
-      const imageUrl = filePath
-        ? new URL(filePath, `${req.protocol}://${req.get('host')}`)
-        : undefined;
+      const sauceId = req.params.id;
+      const updateData = req.body;
+      const imageData = {
+        newFilePath: req.locals.filePath,
+        currentFilePath: formatFilePath(req.locals.sauce.imageUrl.pathname),
+        origin: `${req.protocol}://${req.get('host')}`,
+      };
 
-      const updatedSauce = await this.saucesService.updateSauce(sauce, {
-        name,
-        manufacturer,
-        description,
-        mainPepper,
-        heat,
-        imageUrl,
-      });
+      const updatedSauce = await this.saucesService.updateSauce(
+        sauceId,
+        updateData,
+        imageData
+      );
 
       res.status(200).json({ message: 'Sauce updated', updatedSauce });
     } catch (error) {
@@ -103,9 +103,10 @@ class SaucesController {
     next
   ): Promise<void> => {
     try {
-      const { sauce } = req.locals;
+      const sauceId = req.params.id;
+      const filePath = formatFilePath(req.locals.sauce.imageUrl.pathname);
 
-      this.saucesService.deleteSauce(sauce);
+      await this.saucesService.deleteSauce(sauceId, filePath);
 
       res.status(200).json({ message: 'Sauce deleted' });
     } catch (error) {
@@ -124,7 +125,7 @@ class SaucesController {
     try {
       const { sauce, userId } = req.locals;
       const sauceInterest = req.body.like;
-      const updatedSauce = this.saucesService.updateSauceStatus(
+      const updatedSauce = await this.saucesService.updateSauceStatus(
         sauce,
         userId,
         sauceInterest
