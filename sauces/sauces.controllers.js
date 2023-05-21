@@ -71,7 +71,7 @@ const updateSauce = async (req, res, next) => {
 			);
 		}
 
-		sauce.save();
+		await sauce.save();
 
 		res.status(200).json({ message: 'Sauce updated' });
 	} catch (error) {
