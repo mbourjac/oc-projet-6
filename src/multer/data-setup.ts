@@ -1,9 +1,13 @@
 import { RequestHandler } from 'express';
-import { ISetupSauceData, IValidateSauce } from '../sauces/sauces.types.js';
-import { ITypeRequestBody } from '../request/request.types.js';
+import {
+  IProvideFileData,
+  ISetupSauceData,
+  IValidateSauce,
+} from '../sauces/sauces.types.js';
+import { ITypeRequestBodyAndLocals } from '../request/request.types.js';
 
 export const dataSetup: RequestHandler = (
-  req: ITypeRequestBody<ISetupSauceData>,
+  req: ITypeRequestBodyAndLocals<ISetupSauceData, IProvideFileData>,
   res,
   next
 ): void => {
@@ -11,6 +15,7 @@ export const dataSetup: RequestHandler = (
     const sauce: IValidateSauce = JSON.parse(req.body.sauce);
 
     Object.assign(req.body, sauce);
+    req.locals.filePath = req.file.path;
   }
 
   next();
