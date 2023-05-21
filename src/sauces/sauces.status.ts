@@ -1,5 +1,5 @@
 import { BadRequest } from '../errors';
-import { ISauce } from './sauces.types.js';
+import { ISauce, IUpdateSauceStatus } from './sauces.types.js';
 
 interface ISauceStatus {
   resetInterest(userId: string): NeutralSauce | never;
@@ -20,8 +20,13 @@ export abstract class SauceStatus implements ISauceStatus {
 
   abstract dislikeSauce(userId: string): NeutralSauce | DislikedSauce;
 
-  getSauce(): ISauce {
-    return this.sauce;
+  getStatusData(): IUpdateSauceStatus {
+    return {
+      likes: this.sauce.likes,
+      dislikes: this.sauce.dislikes,
+      usersLiked: this.sauce.usersLiked,
+      usersDisliked: this.sauce.usersDisliked,
+    };
   }
 
   addLikerUser(userId: string): void {
