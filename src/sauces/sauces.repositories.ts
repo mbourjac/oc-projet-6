@@ -9,7 +9,7 @@ export interface SaucesRepository {
   createSauce(sauceData: ICreateSauce): Promise<ISauce>;
   updateSauce(sauce: ISauce): Promise<void>;
   updateSauceWithFile(sauce: ISauce, filename: string): Promise<void>;
-  deleteSauce(sauce: ISauce, filename: string): Promise<void>;
+  deleteSauce(sauceId: string, filePath: string): Promise<void>;
 }
 
 export class MongoSaucesRepository implements SaucesRepository {
@@ -62,32 +62,44 @@ export class MongoSaucesRepository implements SaucesRepository {
     );
   }
 
-  async deleteSauce(sauce: ISauce, filename: string): Promise<void> {
+  async deleteSauce(sauceId: string, filePath: string): Promise<void> {
     const session = await startSession();
-    const mongoSauce = this.convertToMongoDocument(sauce);
+    const sauceDeletion = async () => {
+      const deletedSauce = await Sauce.findByIdAndDelete(sauceId, {
+        session,
+      }).orFail();
 
-    await this.performTransaction(
-      async () => {
-        await mongoSauce.deleteOne({ session });
-      },
-      session,
-      filename
-    );
+      return this.standardizeSauce(deletedSauce);
+    };
+
+    await this.performTransaction(sauceDeletion, session, filePath);
+  }
+
+  private async updateSauceById(sauceId: string, updateData: IUpdateSauceById) {
+    const updatedSauce = await Sauce.findByIdAndUpdate(sauceId, updateData, {
+      new: true,
+      runValidators: true,
+    }).orFail();
+
+    return this.standardizeSauce(updatedSauce);
   }
 
   private async performTransaction(
-    operation: () => Promise<void>,
+    dbOperation: () => Promise<ISauce>,
     session: ClientSession,
-    filename: string
-  ): Promise<void> {
+    currentFilePath: string
+  ): Promise<ISauce> {
     session.startTransaction();
     try {
-      await operation();
-      await this.fileHandler.deleteFile(filename);
+      const sauce = await dbOperation();
+
+      await this.fileHandler.deleteFile(currentFilePath);
       await session.commitTransaction();
+
+      return sauce;
     } catch (error) {
       await session.abortTransaction();
-      throw new Error("The operation couldn't be performed");
+      throw error;
     } finally {
       session.endSession();
     }
