@@ -7,7 +7,7 @@ export class AuthenticationService {
   private static instance: AuthenticationService;
   private readonly tokenHandler: TokenHandler;
 
-  private constructor({ tokenHandler }: IAuthenticationDependencies) {
+  constructor({ tokenHandler }: IAuthenticationDependencies) {
     this.tokenHandler = tokenHandler;
   }
 
