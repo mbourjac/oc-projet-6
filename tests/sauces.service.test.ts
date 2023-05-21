@@ -5,13 +5,13 @@ import {
   ISauce,
   IValidateSauce,
   SauceInterest,
-} from '../src/sauces/sauces.types.js';
+} from '../src/sauces/sauces.types';
 import {
   MockSaucesRepository,
   SaucesRepository,
-} from '../src/sauces/sauces.repositories.js';
-import { SaucesService } from '../src/sauces/sauces.service.js';
-import { FileHandler, MockFileHandler } from '../src/sauces/sauces.files.js';
+} from '../src/sauces/sauces.repositories';
+import { SaucesService } from '../src/sauces/sauces.service';
+import { FileHandler, MockFileHandler } from '../src/sauces/sauces.files';
 import { BadRequest, NotFound } from '../src/errors';
 import { formatFilePath, deepSauceCopy } from '../src/utils/';
 

@@ -1,4 +1,4 @@
-import { JwtTokenHandler, TokenHandler } from './authn.token.js';
+import { JwtTokenHandler, TokenHandler } from './authn.token';
 
 export interface IAuthnDependencies {
   tokenHandler: TokenHandler;

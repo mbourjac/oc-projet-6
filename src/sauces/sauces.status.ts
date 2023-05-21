@@ -1,5 +1,5 @@
 import { BadRequest } from '../errors';
-import { ISauce, IUpdateSauceStatus } from './sauces.types.js';
+import { ISauce, IUpdateSauceStatus } from './sauces.types';
 
 interface ISauceStatus {
   resetInterest(userId: string): NeutralSauce | never;

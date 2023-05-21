@@ -1,7 +1,7 @@
-import { IAuthnDependencies } from './authn.dependencies.js';
-import { TokenHandler } from './authn.token.js';
-import { IAuthenticateUser } from './authn.types.js';
-import { Unauthorized } from '../errors/index.js';
+import { IAuthnDependencies } from './authn.dependencies';
+import { TokenHandler } from './authn.token';
+import { IAuthenticateUser } from './authn.types';
+import { Unauthorized } from '../errors/index';
 
 export class AuthnService {
   private static instance: AuthnService;

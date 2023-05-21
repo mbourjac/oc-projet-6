@@ -1,4 +1,4 @@
-import { HttpError } from './errors.http-error.js';
+import { HttpError } from './errors.http-error';
 
 export class Forbidden extends HttpError {
   static statusCode = 403;

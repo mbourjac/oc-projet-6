@@ -1,18 +1,18 @@
 import { NotFound } from '../errors';
-import { SaucesRepository } from './sauces.repositories.js';
+import { SaucesRepository } from './sauces.repositories';
 import {
   ICreateSauce,
   IMayProvideImageData,
   ISauce,
   IValidateSauce,
   SauceInterest,
-} from './sauces.types.js';
+} from './sauces.types';
 import {
   SauceStatus,
   DislikedSauce,
   LikedSauce,
   NeutralSauce,
-} from './sauces.status.js';
+} from './sauces.status';
 import { ISaucesDependencies } from './sauces.dependencies';
 
 export class SaucesService {

@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { BadRequest } from '../errors';
-import { ITypeRequestBody } from '../request/request.types.js';
-import { IParseSauce } from '../sauces/sauces.types.js';
+import { ITypeRequestBody } from '../request/request.types';
+import { IParseSauce } from '../sauces/sauces.types';
 
 export const dataCheck: RequestHandler = (
   req: ITypeRequestBody<IParseSauce>,

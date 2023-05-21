@@ -1,4 +1,4 @@
-export { multerSetup } from './multer-setup.js';
-export { fileCheck } from './file-check.js';
-export { dataCheck } from './data-check.js';
-export { dataSetup } from './data-setup.js';
+export { multerSetup } from './multer-setup';
+export { fileCheck } from './file-check';
+export { dataCheck } from './data-check';
+export { dataSetup } from './data-setup';

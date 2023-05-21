@@ -1,5 +1,5 @@
-import { PasswordHasher, bcryptPasswordHasher } from './users.password.js';
-import { UsersRepository, mongoUsersRepository } from './users.repositories.js';
+import { PasswordHasher, bcryptPasswordHasher } from './users.password';
+import { UsersRepository, mongoUsersRepository } from './users.repositories';
 
 export interface IUsersDependencies {
   usersRepository: UsersRepository;

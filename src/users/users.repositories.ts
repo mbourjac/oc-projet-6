@@ -1,6 +1,6 @@
 import { HydratedDocument } from 'mongoose';
-import { User } from './User.model.js';
-import { IUser, IValidateUser } from './users.types.js';
+import { User } from './User.model';
+import { IUser, IValidateUser } from './users.types';
 
 export interface UsersRepository {
   getUser(email: string): Promise<IUser | null>;

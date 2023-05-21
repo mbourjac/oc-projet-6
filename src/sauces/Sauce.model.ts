@@ -1,5 +1,5 @@
 import { Schema, Types, model } from 'mongoose';
-import { IValidateSauce } from './sauces.types.js';
+import { IValidateSauce } from './sauces.types';
 
 export interface IMongoSauce extends IValidateSauce {
   userId: Types.ObjectId;

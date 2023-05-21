@@ -6,10 +6,10 @@ import {
   IUpdateSauceById,
   IProvideImageData,
   IValidateSauce,
-} from './sauces.types.js';
-import { IMongoSauce, Sauce } from './Sauce.model.js';
-import { FileHandler } from './sauces.files.js';
-import { NotFound } from '../errors/errors.not-found.js';
+} from './sauces.types';
+import { IMongoSauce, Sauce } from './Sauce.model';
+import { FileHandler } from './sauces.files';
+import { NotFound } from '../errors/errors.not-found';
 
 export interface SaucesRepository {
   getSauce(sauceId: string): Promise<ISauce | null>;

@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
-import { IValidateUser } from './users.types.js';
+import { IValidateUser } from './users.types';
 
 const userSchema = new Schema<IValidateUser>({
   email: {

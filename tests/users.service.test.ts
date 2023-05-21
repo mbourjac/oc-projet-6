@@ -2,13 +2,13 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   UsersRepository,
   MockUsersRepository,
-} from '../src/users/users.repositories.js';
-import { UsersService } from '../src/users/users.service.js';
+} from '../src/users/users.repositories';
+import { UsersService } from '../src/users/users.service';
 import {
   PasswordHasher,
   MockPasswordHasher,
-} from '../src/users/users.password.js';
-import { IUser, IValidateUser } from '../src/users/users.types.js';
+} from '../src/users/users.password';
+import { IUser, IValidateUser } from '../src/users/users.types';
 import { BadRequest, Unauthorized } from '../src/errors';
 
 describe('when using a users service', () => {

@@ -1,15 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
-import { authenticateUser } from './authn/authn.middleware.js';
+import { authenticateUser } from './authn/authn.middleware';
 import {
   fileErrorHandler,
   httpErrorHandler,
   mongooseErrorHandler,
   multerErrorHandler,
-} from './errors/errors.handlers.js';
-import { authRouter } from './users/users.routes.js';
-import { saucesRouter } from './sauces/sauces.routes.js';
+} from './errors/errors.handlers';
+import { authRouter } from './users/users.routes';
+import { saucesRouter } from './sauces/sauces.routes';
 
 export const app = express();
 

@@ -4,14 +4,14 @@ import {
   IProvideSauceInterest,
   IValidateSauce,
   IProvideFileData,
-} from './sauces.types.js';
-import { SaucesService } from './sauces.service.js';
-import { sauceDependencies } from './sauces.dependencies.js';
+} from './sauces.types';
+import { SaucesService } from './sauces.service';
+import { sauceDependencies } from './sauces.dependencies';
 import {
   ITypeRequestBodyAndLocals,
   ITypeRequestLocals,
-} from '../request/request.types.js';
-import { IAuthenticateUser } from '../authn/authn.types.js';
+} from '../request/request.types';
+import { IAuthenticateUser } from '../authn/authn.types';
 import { formatFilePath } from '../utils/';
 
 class SaucesController {

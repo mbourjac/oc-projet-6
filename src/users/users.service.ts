@@ -1,8 +1,8 @@
 import { BadRequest, Unauthorized } from '../errors';
-import { PasswordHasher } from './users.password.js';
-import { UsersRepository } from './users.repositories.js';
-import { IValidateUser, IUser } from './users.types.js';
-import { IUsersDependencies } from './users.dependencies.js';
+import { PasswordHasher } from './users.password';
+import { UsersRepository } from './users.repositories';
+import { IValidateUser, IUser } from './users.types';
+import { IUsersDependencies } from './users.dependencies';
 
 export class UsersService {
   private static instance: UsersService;

@@ -1,2 +1,2 @@
-export { deepSauceCopy } from './deep-copy.js';
-export { formatFilePath } from './format-path.js';
+export { deepSauceCopy } from './deep-copy';
+export { formatFilePath } from './format-path';

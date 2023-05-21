@@ -1,8 +1,8 @@
 import express from 'express';
 import { multerSetup, fileCheck, dataCheck, dataSetup } from '../multer';
-import { validateSauceData, validateLikeData } from './sauces.validation.js';
-import { validationCheck } from '../middleware/validation-check.js';
-import { saucesController } from './sauces.controller.js';
+import { validateSauceData, validateLikeData } from './sauces.validation';
+import { validationCheck } from '../middleware/validation-check';
+import { saucesController } from './sauces.controller';
 import { authorizeUser } from './sauces.authorization';
 import { findSauceOrThrow } from './sauces.finder';
 

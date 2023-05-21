@@ -1,8 +1,5 @@
-import { fsFileHandler } from './sauces.files.js';
-import {
-  SaucesRepository,
-  MongoSaucesRepository,
-} from './sauces.repositories.js';
+import { fsFileHandler } from './sauces.files';
+import { SaucesRepository, MongoSaucesRepository } from './sauces.repositories';
 
 export interface ISaucesDependencies {
   saucesRepository: SaucesRepository;

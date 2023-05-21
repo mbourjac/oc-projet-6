@@ -3,8 +3,8 @@ import {
   IProvideFileData,
   ISetupSauceData,
   IValidateSauce,
-} from '../sauces/sauces.types.js';
-import { ITypeRequestBodyAndLocals } from '../request/request.types.js';
+} from '../sauces/sauces.types';
+import { ITypeRequestBodyAndLocals } from '../request/request.types';
 
 export const dataSetup: RequestHandler = (
   req: ITypeRequestBodyAndLocals<ISetupSauceData, IProvideFileData>,

@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
-import { ITypeRequestLocals } from '../request/request.types.js';
-import { IAuthenticateUser } from '../authn/authn.types.js';
-import { IProvideSauceData } from './sauces.types.js';
-import { Forbidden } from '../errors/errors.forbidden.js';
+import { ITypeRequestLocals } from '../request/request.types';
+import { IAuthenticateUser } from '../authn/authn.types';
+import { IProvideSauceData } from './sauces.types';
+import { Forbidden } from '../errors/errors.forbidden';
 
 export const authorizeUser: RequestHandler = (
   req: ITypeRequestLocals<IAuthenticateUser & IProvideSauceData>,

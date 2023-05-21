@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { AuthnService } from '../src/authn/authn.service.js';
-import { TokenHandler, MockTokenHandler } from '../src/authn/authn.token.js';
+import { AuthnService } from '../src/authn/authn.service';
+import { TokenHandler, MockTokenHandler } from '../src/authn/authn.token';
 import { Unauthorized } from '../src/errors';
 
 describe('when using a users service', () => {

@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
-import { IValidateUser } from './users.types.js';
-import { UsersService } from './users.service.js';
-import { usersDependencies } from './users.dependencies.js';
-import { AuthnService } from '../authn/authn.service.js';
-import { authnDependencies } from '../authn/authn.dependencies.js';
+import { IValidateUser } from './users.types';
+import { UsersService } from './users.service';
+import { usersDependencies } from './users.dependencies';
+import { AuthnService } from '../authn/authn.service';
+import { authnDependencies } from '../authn/authn.dependencies';
 
 class UsersController {
   constructor(

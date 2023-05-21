@@ -1,7 +1,7 @@
 import multer from 'multer';
 import { ErrorRequestHandler } from 'express';
 import { unlink } from 'fs/promises';
-import { HttpError } from './errors.http-error.js';
+import { HttpError } from './errors.http-error';
 
 export const fileErrorHandler: ErrorRequestHandler = async (
   error,
