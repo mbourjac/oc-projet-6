@@ -14,7 +14,7 @@ export const dataSetup: RequestHandler = (
   if (req.file && req.body.sauce) {
     const sauce: IValidateSauce = JSON.parse(req.body.sauce);
 
-    Object.assign(req.body, sauce);
+    req.body = { ...req.body, ...sauce };
     req.locals.filePath = req.file.path;
   }
 
