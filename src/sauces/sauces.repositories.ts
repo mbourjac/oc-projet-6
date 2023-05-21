@@ -9,6 +9,7 @@ import {
 } from './sauces.types.js';
 import { IMongoSauce, Sauce } from './Sauce.model.js';
 import { FileHandler } from './sauces.files.js';
+import { NotFound } from '../errors/errors.not-found.js';
 
 export interface SaucesRepository {
   getSauce(sauceId: string): Promise<ISauce | null>;
@@ -24,6 +25,151 @@ export interface SaucesRepository {
     statusData: IUpdateSauceStatus
   ): Promise<ISauce>;
   deleteSauce(sauceId: string, filePath: string): Promise<void>;
+}
+
+export class MockSaucesRepository implements SaucesRepository {
+  private backupSauces: ISauce[] = [];
+
+  private constructor(
+    private sauces: ISauce[],
+    private fileHandler: FileHandler | null
+  ) {}
+
+  static init(): MockSaucesRepository {
+    return new MockSaucesRepository([], null);
+  }
+
+  withSauces(sauces: ISauce[]): MockSaucesRepository {
+    this.sauces = this.deepSaucesCopy(sauces);
+    return this;
+  }
+
+  withFileHandler(fileHandler: FileHandler): MockSaucesRepository {
+    this.fileHandler = fileHandler;
+    return this;
+  }
+
+  async getSauce(sauceId: string): Promise<ISauce | null> {
+    const sauce = this.sauces.find(({ _id }) => _id === sauceId);
+
+    return sauce ?? null;
+  }
+
+  async getAllSauces(): Promise<ISauce[]> {
+    return this.sauces;
+  }
+
+  async createSauce(sauceData: ICreateSauce): Promise<ISauce> {
+    const _id = Math.random().toString(36).slice(2, 7);
+
+    const sauce = {
+      ...sauceData,
+      _id,
+      likes: 0,
+      dislikes: 0,
+      usersLiked: [],
+      usersDisliked: [],
+    };
+
+    this.sauces = [...this.sauces, sauce];
+
+    return sauce;
+  }
+
+  async updateSauceImage(
+    sauceId: string,
+    { origin, newFilePath, currentFilePath }: IProvideImageData
+  ): Promise<ISauce> {
+    const imageUrl = new URL(newFilePath, origin);
+    const sauceUpdate = () => {
+      return this.updateSauceById(sauceId, { imageUrl });
+    };
+
+    return this.performTransaction(sauceUpdate, currentFilePath);
+  }
+
+  async updateSauceData(
+    sauceId: string,
+    updateData: IValidateSauce
+  ): Promise<ISauce> {
+    return this.updateSauceById(sauceId, updateData);
+  }
+
+  async updateSauceStatus(
+    sauceId: string,
+    statusData: IUpdateSauceStatus
+  ): Promise<ISauce> {
+    return this.updateSauceById(sauceId, statusData);
+  }
+
+  async deleteSauce(sauceId: string, filePath: string): Promise<void> {
+    const sauceDeletion = () => {
+      const deletedSauce = this.sauces.find(({ _id }) => _id !== sauceId);
+
+      if (!deletedSauce) {
+        throw new NotFound(`No sauce with id ${sauceId}`);
+      }
+
+      this.sauces = this.sauces.filter(({ _id }) => _id !== sauceId);
+
+      return deletedSauce;
+    };
+
+    await this.performTransaction(sauceDeletion, filePath);
+  }
+
+  private updateSauceById(
+    sauceId: string,
+    updateData: IUpdateSauceById
+  ): ISauce {
+    const sauceIndex = this.sauces.findIndex((sauce) => sauce._id === sauceId);
+
+    if (sauceIndex === -1) {
+      throw new NotFound(`No sauce with id ${sauceId}`);
+    }
+
+    const currentSauce = this.sauces[sauceIndex];
+    const updatedSauce = { ...currentSauce, ...updateData };
+
+    this.sauces = [
+      ...this.sauces.slice(0, sauceIndex),
+      updatedSauce,
+      ...this.sauces.slice(sauceIndex + 1),
+    ];
+
+    return updatedSauce;
+  }
+
+  private async performTransaction(
+    operation: () => ISauce,
+    filePath: string
+  ): Promise<ISauce> {
+    this.backupSauces = this.deepSaucesCopy(this.sauces);
+
+    try {
+      const sauce = operation();
+
+      await this.fileHandler?.deleteFile(filePath);
+
+      return sauce;
+    } catch (error) {
+      this.sauces = this.backupSauces;
+      throw error;
+    }
+  }
+
+  private deepSauceCopy(sauce: ISauce): ISauce {
+    return {
+      ...sauce,
+      imageUrl: new URL(sauce.imageUrl.toString()),
+      usersLiked: [...sauce.usersLiked],
+      usersDisliked: [...sauce.usersDisliked],
+    };
+  }
+
+  private deepSaucesCopy(sauces: ISauce[]): ISauce[] {
+    return sauces.map((sauce) => this.deepSauceCopy(sauce));
+  }
 }
 
 export class MongoSaucesRepository implements SaucesRepository {
