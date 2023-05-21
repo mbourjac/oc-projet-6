@@ -4,5 +4,5 @@ export interface IValidateUser {
 }
 
 export interface IUser extends IValidateUser {
-  id: string;
+  _id: string;
 }

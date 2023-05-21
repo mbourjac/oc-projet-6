@@ -26,11 +26,11 @@ export class MockUsersRepository implements UsersRepository {
   }
 
   async createUser(userData: IValidateUser): Promise<IUser> {
-    const id = Math.random().toString(36).slice(2, 7);
+    const _id = Math.random().toString(36).slice(2, 7);
 
     const user = {
       ...userData,
-      id,
+      _id,
     };
 
     this.users = [...this.users, user];
@@ -57,7 +57,7 @@ class MongoUsersRepository implements UsersRepository {
     password,
   }: HydratedDocument<IValidateUser>): IUser {
     return {
-      id: _id.toString(),
+      _id: _id.toString(),
       email,
       password,
     };
