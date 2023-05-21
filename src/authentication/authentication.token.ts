@@ -19,17 +19,17 @@ export class MockTokenHandler implements TokenHandler {
   }
 
   createToken(payload: IAuthenticateUser): string {
-    const token = {
-      payload,
-      secretKey: this.secretKey,
-      expiresIn: '24h',
-    };
+    const stringPayload = JSON.stringify(payload);
+    const encodedPayload = Buffer.from(stringPayload).toString('base64');
 
-    return JSON.stringify(token);
+    return `${encodedPayload}.${this.secretKey}`;
   }
 
-  getPayload(token: string): string | JwtPayload {
-    return JSON.parse(token);
+  getPayload(token: string): IAuthenticateUser | null {
+    const [encodedPayload, secretKey] = token.split('.');
+    const decodedPayload = Buffer.from(encodedPayload, 'base64').toString();
+
+    return secretKey === this.secretKey ? JSON.parse(decodedPayload) : null;
   }
 }
 
