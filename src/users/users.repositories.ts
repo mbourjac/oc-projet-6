@@ -1,4 +1,4 @@
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 import { User } from './User.model.js';
 import { IUser, IValidateUser } from './users.types.js';
 
@@ -40,16 +40,6 @@ export class MockUsersRepository implements UsersRepository {
 }
 
 class MongoUsersRepository implements UsersRepository {
-  convertToMongoDocument({ id, email, password }: IUser) {
-    const rawDocument = {
-      _id: new Types.ObjectId(id),
-      email,
-      password,
-    };
-
-    return User.hydrate(rawDocument);
-  }
-
   async getUser(email: string): Promise<IUser | null> {
     const mongoUser = await User.findOne({ email });
 
