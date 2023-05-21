@@ -1,6 +1,4 @@
 const express = require('express');
-const app = express();
-
 const cors = require('cors');
 const path = require('path');
 const authorizeUser = require('./middleware/authorization');
@@ -10,9 +8,10 @@ const {
 	mongooseErrorHandler,
 	multerErrorHandler,
 } = require('./middleware/error-handlers');
-
 const authRouter = require('./users/auth.routes');
 const saucesRouter = require('./sauces/sauces.routes');
+
+const app = express();
 
 app.use(cors());
 app.use(express.json());
