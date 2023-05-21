@@ -50,6 +50,8 @@ const getSauce = async (req, res, next) => {
 };
 
 const updateSauce = async (req, res, next) => {
+	let session;
+
 	try {
 		const { sauce } = req;
 		const { name, manufacturer, description, mainPepper, heat } = req.body;
@@ -61,6 +63,9 @@ const updateSauce = async (req, res, next) => {
 		sauce.heat = heat;
 
 		if (req.file) {
+			session = await mongoose.startSession();
+			session.startTransaction();
+
 			const filename = sauce.imageUrl.split('/').pop();
 
 			await unlink(`images/${filename}`);
@@ -71,10 +76,20 @@ const updateSauce = async (req, res, next) => {
 			);
 		}
 
-		await sauce.save();
+		await sauce.save({ session });
+
+		if (session) {
+			await session.commitTransaction();
+			session.endSession();
+		}
 
 		res.status(200).json({ message: 'Sauce updated' });
 	} catch (error) {
+		if (session) {
+			await session.abortTransaction();
+			session.endSession();
+		}
+
 		next(error);
 	}
 };
