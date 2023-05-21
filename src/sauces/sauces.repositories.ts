@@ -26,21 +26,21 @@ export class MongoSaucesRepository implements SaucesRepository {
   }
 
   async getSauce(sauceId: string): Promise<ISauce | null> {
-    const mongoSauce = await Sauce.findById(sauceId);
+    const sauce = await Sauce.findById(sauceId);
 
-    return mongoSauce ? this.standardizeSauce(mongoSauce) : null;
+    return sauce ? this.standardizeSauce(sauce) : null;
   }
 
   async getAllSauces(): Promise<ISauce[]> {
-    const mongoSauces = await Sauce.find();
+    const sauces = await Sauce.find();
 
-    return mongoSauces.map((mongoSauce) => this.standardizeSauce(mongoSauce));
+    return sauces.map((sauce) => this.standardizeSauce(sauce));
   }
 
   async createSauce(sauceData: ICreateSauce): Promise<ISauce> {
-    const mongoSauce = await Sauce.create(sauceData);
+    const createdSauce = await Sauce.create(sauceData);
 
-    return this.standardizeSauce(mongoSauce);
+    return this.standardizeSauce(createdSauce);
   }
 
   async updateSauce(sauce: ISauce): Promise<void> {
