@@ -2,8 +2,9 @@ import { NotFound } from '../errors';
 import { SaucesRepository } from './sauces.repositories.js';
 import {
   ICreateSauce,
+  IMayProvideImageData,
   ISauce,
-  IUpdateSauce,
+  IValidateSauce,
   SauceInterest,
 } from './sauces.types.js';
 import {
@@ -49,38 +50,28 @@ export class SaucesService {
   }
 
   async updateSauce(
-    sauce: ISauce,
-    {
-      name,
-      manufacturer,
-      description,
-      mainPepper,
-      heat,
-      imageUrl,
-    }: IUpdateSauce
+    sauceId: string,
+    updateData: IValidateSauce,
+    { newFilePath, currentFilePath, origin }: IMayProvideImageData
   ): Promise<ISauce> {
-    sauce.name = name;
-    sauce.manufacturer = manufacturer;
-    sauce.description = description;
-    sauce.mainPepper = mainPepper;
-    sauce.heat = heat;
+    let updatedSauce = await this.saucesRepository.updateSauceData(
+      sauceId,
+      updateData
+    );
 
-    if (imageUrl) {
-      const filename = this.getSauceFilename(sauce.imageUrl);
-
-      sauce.imageUrl = imageUrl;
-      await this.saucesRepository.updateSauceWithFile(sauce, filename);
-    } else {
-      await this.saucesRepository.updateSauce(sauce);
+    if (newFilePath) {
+      updatedSauce = await this.saucesRepository.updateSauceImage(sauceId, {
+        newFilePath,
+        currentFilePath,
+        origin,
+      });
     }
 
-    return sauce;
+    return updatedSauce;
   }
 
-  async deleteSauce(sauce: ISauce): Promise<void> {
-    const filename = this.getSauceFilename(sauce.imageUrl);
-
-    await this.saucesRepository.deleteSauce(sauce, filename);
+  async deleteSauce(sauceId: string, filePath: string): Promise<void> {
+    await this.saucesRepository.deleteSauce(sauceId, filePath);
   }
 
   async updateSauceStatus(
@@ -89,18 +80,16 @@ export class SaucesService {
     sauceInterest: SauceInterest
   ): Promise<ISauce> {
     const sauceStatus = this.getSauceStatus(sauce, userId);
-    const updatedStatus =
+    const updatedSauceStatus =
       sauceInterest === 1
         ? sauceStatus.likeSauce(userId)
         : sauceInterest === -1
         ? sauceStatus.dislikeSauce(userId)
         : sauceStatus.resetInterest(userId);
 
-    const updatedSauce = updatedStatus.getSauce();
+    const updatedSauce = updatedSauceStatus.getStatusData();
 
-    await this.saucesRepository.updateSauce(updatedSauce);
-
-    return updatedSauce;
+    return this.saucesRepository.updateSauceStatus(sauce._id, updatedSauce);
   }
 
   private getSauceStatus(sauce: ISauce, userId: string): SauceStatus {
@@ -111,10 +100,5 @@ export class SaucesService {
       : new NeutralSauce(sauce);
 
     return sauceStatus;
-  }
-
-  private getSauceFilename(imageUrl: URL): string {
-    const pathname = imageUrl.pathname;
-    return pathname.substring(pathname.lastIndexOf('/') + 1);
   }
 }
