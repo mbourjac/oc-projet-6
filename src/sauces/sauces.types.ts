@@ -11,8 +11,8 @@ export interface ICreateSauce extends IValidateSauce {
   imageUrl: URL;
 }
 
-export interface IUpdateSauce extends IValidateSauce {
-  imageUrl: URL | undefined;
+export interface IUpdateSauceImage {
+  imageUrl: URL;
 }
 
 export interface IUpdateSauceStatus {
@@ -22,8 +22,23 @@ export interface IUpdateSauceStatus {
   usersDisliked: string[];
 }
 
+export type IUpdateSauceById =
+  | IValidateSauce
+  | IUpdateSauceImage
+  | IUpdateSauceStatus;
+
 export interface ISauce extends ICreateSauce, IUpdateSauceStatus {
   _id: string;
+}
+
+export interface IMayProvideImageData {
+  newFilePath: string | undefined;
+  currentFilePath: string;
+  origin: string;
+}
+
+export interface IProvideImageData extends IMayProvideImageData {
+  newFilePath: string;
 }
 
 export interface IProvideFileData {
@@ -32,12 +47,6 @@ export interface IProvideFileData {
 
 export interface IParseSauce {
   sauce?: string;
-}
-
-export enum SauceInterest {
-  Dislike = -1,
-  Neutral,
-  Like,
 }
 
 export interface IProvideSauceData {
@@ -49,3 +58,9 @@ export interface IProvideSauceInterest {
 }
 
 export interface ISetupSauceData extends Partial<IValidateSauce>, IParseSauce {}
+
+export enum SauceInterest {
+  Dislike = -1,
+  Neutral,
+  Like,
+}
