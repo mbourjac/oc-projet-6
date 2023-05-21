@@ -1,4 +1,4 @@
-import { HydratedDocument, Types, startSession, ClientSession } from 'mongoose';
+import { HydratedDocument, startSession, ClientSession } from 'mongoose';
 import {
   ISauce,
   ICreateSauce,
@@ -125,38 +125,6 @@ export class MongoSaucesRepository implements SaucesRepository {
     } finally {
       session.endSession();
     }
-  }
-
-  private convertToMongoDocument({
-    _id,
-    userId,
-    name,
-    manufacturer,
-    description,
-    mainPepper,
-    heat,
-    imageUrl,
-    likes,
-    dislikes,
-    usersLiked,
-    usersDisliked,
-  }: ISauce) {
-    const rawDocument = {
-      _id: new Types.ObjectId(_id),
-      userId: new Types.ObjectId(userId),
-      name,
-      manufacturer,
-      description,
-      mainPepper,
-      heat,
-      imageUrl: imageUrl.toString(),
-      likes,
-      dislikes,
-      usersLiked: usersLiked.map((userId) => new Types.ObjectId(userId)),
-      usersDisliked: usersDisliked.map((userId) => new Types.ObjectId(userId)),
-    };
-
-    return Sauce.hydrate(rawDocument);
   }
 
   private standardizeSauce({
