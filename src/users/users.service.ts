@@ -45,7 +45,7 @@ export class UsersService {
     email,
     password: candidatePassword,
   }: IValidateUser): Promise<string> {
-    const { id: userId, password } = await this.getUserOrThrow(email);
+    const { id: userId, password } = await this.findUserOrThrow(email);
     const isRightPassword = await this.passwordHasher.comparePassword(
       candidatePassword,
       password
@@ -58,7 +58,7 @@ export class UsersService {
     return userId;
   }
 
-  private async getUserOrThrow(email: string): Promise<IUser> {
+  private async findUserOrThrow(email: string): Promise<IUser> {
     const user = await this.userRepository.getUser(email);
 
     if (!user) {
