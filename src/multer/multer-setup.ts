@@ -3,20 +3,26 @@ import { Request } from 'express';
 import { BadRequest } from '../errors';
 
 type FileExtension = 'jpg' | 'png';
+const MimeTypesMapping = new Map<string, FileExtension>();
 
-const MIME_TYPES: Record<string, FileExtension> = {
-  'image/jpg': 'jpg',
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-};
+MimeTypesMapping.set('image/jpg', 'jpg');
+MimeTypesMapping.set('image/jpeg', 'jpg');
+MimeTypesMapping.set('image/png', 'png');
 
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, 'images');
   },
   filename: (req, file, callback) => {
-    const extension: FileExtension = MIME_TYPES[file.mimetype];
-    callback(null, `${file.fieldname}-${Date.now()}.${extension}`);
+    const extension: FileExtension | undefined = MimeTypesMapping.get(
+      file.mimetype
+    );
+
+    if (extension) {
+      callback(null, `${file.fieldname}-${Date.now()}.${extension}`);
+    } else {
+      callback(new Error('Invalid file mimetype'), '');
+    }
   },
 });
 
@@ -25,7 +31,7 @@ const fileFilter = (
   file: Express.Multer.File,
   callback: FileFilterCallback
 ): void => {
-  if (file.mimetype in MIME_TYPES) {
+  if (MimeTypesMapping.has(file.mimetype)) {
     callback(null, true);
   } else {
     callback(new BadRequest('Only JPEG, JPG, and PNG files are allowed'));
