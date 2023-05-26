@@ -108,7 +108,7 @@ class SaucesController {
 
       await this.saucesService.deleteSauce(sauceId, filePath);
 
-      res.status(200).json({ message: 'Sauce deleted' });
+      res.status(204);
     } catch (error) {
       next(error);
     }
