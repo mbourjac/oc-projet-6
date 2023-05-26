@@ -1,3 +1,4 @@
+import { getConfig } from '../config/config';
 import { JwtTokenHandler, TokenHandler } from './authn.token';
 
 export interface IAuthnDependencies {
@@ -8,18 +9,9 @@ class AuthnDependencies implements IAuthnDependencies {
   readonly tokenHandler: TokenHandler;
 
   constructor() {
-    const secretTokenKey = process.env.JWT_SECRET;
+    const { secretTokenKey } = getConfig();
 
-    if (!secretTokenKey) {
-      throw new Error('Please provide a secret token key');
-    }
-
-    try {
-      this.tokenHandler = JwtTokenHandler.getInstance(secretTokenKey);
-    } catch (error) {
-      console.error(error);
-      process.exit(1);
-    }
+    this.tokenHandler = JwtTokenHandler.getInstance(secretTokenKey);
   }
 }
 
