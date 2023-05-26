@@ -3,6 +3,7 @@ import { SaucesService } from './sauces.service';
 import { sauceDependencies } from './sauces.dependencies';
 import { IProvideSauceData } from './sauces.types';
 import { ITypeRequestLocals } from '../request/request.types';
+import { NotFound } from '../errors';
 
 export const findSauceOrThrow: RequestHandler = async (
   req: ITypeRequestLocals<Partial<IProvideSauceData>>,
@@ -18,6 +19,10 @@ export const findSauceOrThrow: RequestHandler = async (
 
     next();
   } catch (error) {
-    next(error);
+    if (req.method === 'DELETE' && error instanceof NotFound) {
+      res.status(204);
+    } else {
+      next(error);
+    }
   }
 };
