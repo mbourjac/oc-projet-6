@@ -1,4 +1,5 @@
 import { unlink, readdir } from 'fs/promises';
+import { isFileNotFoundError } from '../errors';
 
 export interface FileHandler {
   readFiles(path: string): Promise<string[]>;
@@ -47,7 +48,15 @@ class FsFileHandler implements FileHandler {
   }
 
   async deleteFile(filePath: string): Promise<void> {
-    await unlink(filePath);
+    try {
+      await unlink(filePath);
+    } catch (error) {
+      if (isFileNotFoundError(error)) {
+        return;
+      }
+
+      throw error;
+    }
   }
 }
 
