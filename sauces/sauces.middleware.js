@@ -1,5 +1,5 @@
 const Sauce = require('./Sauce.model');
-const { Unauthorized, NotFound } = require('../errors');
+const { NotFound, Forbidden } = require('../errors');
 
 const findSauceOrThrow = async (req, res, next) => {
 	try {
@@ -25,7 +25,7 @@ const authorizeUser = async (req, res, next) => {
 		const action = req.method === 'PUT' ? 'update' : 'delete';
 
 		if (!sauce.userId.equals(userId)) {
-			throw new Unauthorized(
+			throw new Forbidden(
 				`You are not authorized to ${action} this sauce`
 			);
 		}
