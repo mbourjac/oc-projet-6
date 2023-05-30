@@ -18,7 +18,7 @@ const findSauceOrThrow = async (req, res, next) => {
 	}
 };
 
-const canManageSauce = async (req, res, next) => {
+const authorizeUser = async (req, res, next) => {
 	try {
 		const { sauce } = req;
 		const { userId } = req.user;
@@ -36,4 +36,4 @@ const canManageSauce = async (req, res, next) => {
 	}
 };
 
-module.exports = { findSauceOrThrow, canManageSauce };
+module.exports = { findSauceOrThrow, authorizeUser };

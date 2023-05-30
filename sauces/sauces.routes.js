@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { multerSetup, fileCheck, dataCheck, dataSetup } = require('../multer');
-const { findSauceOrThrow, canManageSauce } = require('./sauces.middleware');
+const { findSauceOrThrow, authorizeUser } = require('./sauces.middleware');
 const {
 	validateSauceData,
 	validateLikeData,
@@ -37,10 +37,10 @@ router.put(
 	validateSauceData,
 	validationCheck,
 	findSauceOrThrow,
-	canManageSauce,
+	authorizeUser,
 	updateSauce
 );
-router.delete('/:id', findSauceOrThrow, canManageSauce, deleteSauce);
+router.delete('/:id', findSauceOrThrow, authorizeUser, deleteSauce);
 router.post(
 	'/:id/like',
 	validateLikeData,
