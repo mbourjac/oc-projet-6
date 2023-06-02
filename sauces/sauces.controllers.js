@@ -5,7 +5,7 @@ const {
 	LikedSauce,
 	DislikedSauce,
 	NeutralSauce,
-} = require('./sauces.interest');
+} = require('./sauces.status');
 
 const getAllSauces = async (req, res, next) => {
 	try {
@@ -118,23 +118,21 @@ const updateLikeStatus = async (req, res, next) => {
 	try {
 		const { sauce } = req;
 		const { userId } = req.user;
-		const { like: status } = req.body;
+		const { like } = req.body;
 
-		let sauceInterest = sauce.usersLiked.includes(userId)
+		const currentStatus = sauce.usersLiked.includes(userId)
 			? new LikedSauce(sauce)
 			: sauce.usersDisliked.includes(userId)
 			? new DislikedSauce(sauce)
 			: new NeutralSauce(sauce);
 
-		sauceInterest =
-			status === 1
-				? sauceInterest.likeSauce(userId)
-				: status === -1
-				? sauceInterest.dislikeSauce(userId)
-				: sauceInterest.resetInterest(userId);
+		const updatedStatus = like === 1
+      ? currentStatus.likeSauce(userId)
+      : like === -1
+      ? currentStatus.dislikeSauce(userId)
+      : currentStatus.resetStatus(userId);
 
-		const { likes, dislikes, usersLiked, usersDisliked } =
-			sauceInterest.sauce;
+		const { likes, dislikes, usersLiked, usersDisliked } = updatedStatus.sauce;
 
 		sauce.likes = likes;
 		sauce.dislikes = dislikes;

@@ -1,11 +1,11 @@
 const { BadRequest } = require('../errors');
 
-class AbstractSauceInterest {
+class AbstractSauceStatus {
 	constructor(sauce) {
 		this.sauce = sauce;
 	}
 
-	resetInterest() {
+	resetStatus() {
 		throw new Error('Not implemented');
 	}
 
@@ -42,14 +42,14 @@ class AbstractSauceInterest {
 	}
 }
 
-class LikedSauce extends AbstractSauceInterest {
-	resetInterest(userId) {
+class LikedSauce extends AbstractSauceStatus {
+	resetStatus(userId) {
 		this.removeLikerUser(userId);
 		return new NeutralSauce(this.sauce);
 	}
 
 	likeSauce(userId) {
-		return this.resetInterest(userId);
+		return this.resetStatus(userId);
 	}
 
 	dislikeSauce(userId) {
@@ -59,8 +59,8 @@ class LikedSauce extends AbstractSauceInterest {
 	}
 }
 
-class DislikedSauce extends AbstractSauceInterest {
-	resetInterest(userId) {
+class DislikedSauce extends AbstractSauceStatus {
+	resetStatus(userId) {
 		this.removeDislikerUser(userId);
 		return new NeutralSauce(this.sauce);
 	}
@@ -72,12 +72,12 @@ class DislikedSauce extends AbstractSauceInterest {
 	}
 
 	dislikeSauce(userId) {
-		return this.resetInterest(userId);
+		return this.resetStatus(userId);
 	}
 }
 
-class NeutralSauce extends AbstractSauceInterest {
-	resetInterest() {
+class NeutralSauce extends AbstractSauceStatus {
+	resetStatus() {
 		throw new BadRequest(
 			"User hasn't previously set this sauce's like status"
 		);
