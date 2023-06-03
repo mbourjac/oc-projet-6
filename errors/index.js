@@ -1,4 +1,4 @@
-const HttpError = require('./erros.http-error');
+const HttpError = require('./errors.http-error');
 const BadRequest = require('./errors.bad-request');
 const Unauthorized = require('./errors.unauthorized');
 const Forbidden = require('./errors.forbidden');

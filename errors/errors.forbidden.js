@@ -1,4 +1,4 @@
-const HttpError = require('./erros.http-error');
+const HttpError = require('./errors.http-error');
 
 class Forbidden extends HttpError {
 	constructor(message) {
