@@ -8,7 +8,7 @@ const {
 	httpErrorHandler,
 	mongooseErrorHandler,
 	multerErrorHandler,
-} = require('./middlewares/error-handlers');
+} = require('./errors');
 const usersRouter = require('./users/users.routes');
 const saucesRouter = require('./sauces/sauces.routes');
 
