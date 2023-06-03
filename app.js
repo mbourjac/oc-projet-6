@@ -3,14 +3,14 @@ const cors = require('cors');
 const path = require('path');
 const helmet = require('helmet');
 const authenticateUser = require('./middlewares/authentication');
+const usersRouter = require('./users/users.routes');
+const saucesRouter = require('./sauces/sauces.routes');
 const {
 	fileErrorHandler,
 	httpErrorHandler,
 	mongooseErrorHandler,
 	multerErrorHandler,
 } = require('./errors');
-const usersRouter = require('./users/users.routes');
-const saucesRouter = require('./sauces/sauces.routes');
 
 const app = express();
 
