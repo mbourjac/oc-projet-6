@@ -50,38 +50,38 @@ const getSauce = async (req, res, next) => {
 };
 
 const updateSauce = async (req, res, next) => {
-	let session;
+	const session = req.file ? await mongoose.startSession() : undefined;
+  const { sauce } = req;
+  const { name, manufacturer, description, mainPepper, heat } = req.body;
+
+  sauce.name = name;
+  sauce.manufacturer = manufacturer;
+  sauce.description = description;
+  sauce.mainPepper = mainPepper;
+  sauce.heat = heat;
 
 	try {
-		const { sauce } = req;
-		const { name, manufacturer, description, mainPepper, heat } = req.body;
+    if (!session) {
+      await sauce.save();
+      res.status(200).json({ message: 'Sauce updated' });
 
-		sauce.name = name;
-		sauce.manufacturer = manufacturer;
-		sauce.description = description;
-		sauce.mainPepper = mainPepper;
-		sauce.heat = heat;
+      return
+    }
 
-		if (req.file) {
-			session = await mongoose.startSession();
-			session.startTransaction();
+		session.startTransaction();
 
-			const filename = sauce.imageUrl.split('/').pop();
+    const filename = sauce.imageUrl.split('/').pop();
 
-			await unlink(`images/${filename}`);
+    await unlink(`images/${filename}`);
 
-			sauce.imageUrl = new URL(
-				req.file.path,
-				`${req.protocol}://${req.get('host')}`
-			);
-		}
+    sauce.imageUrl = new URL(
+      req.file.path,
+      `${req.protocol}://${req.get('host')}`
+    );
 
 		await sauce.save({ session });
-
-		if (session) {
-			await session.commitTransaction();
-			session.endSession();
-		}
+		await session.commitTransaction();
+    session.endSession();
 
 		res.status(200).json({ message: 'Sauce updated' });
 	} catch (error) {
