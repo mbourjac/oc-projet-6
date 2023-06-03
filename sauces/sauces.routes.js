@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 
 const { multerSetup, fileCheck, dataCheck, dataSetup } = require('../multer');
-const { findSauceOrThrow, authorizeUser } = require('./sauces.middleware');
+const { findSauceOrThrow, authorizeUser } = require('./sauces.middlewares');
 const {
 	validateSauceData,
 	validateLikeData,
-	validationCheck,
 } = require('./sauces.validation');
+const { checkValidation } = require('../middlewares/check-validation')
 const {
 	getAllSauces,
 	createSauce,
@@ -25,7 +25,7 @@ router.post(
 	dataCheck,
 	dataSetup,
 	validateSauceData,
-	validationCheck,
+	checkValidation,
 	createSauce
 );
 router.get('/:id', findSauceOrThrow, getSauce);
@@ -35,7 +35,7 @@ router.put(
 	dataCheck,
 	dataSetup,
 	validateSauceData,
-	validationCheck,
+	checkValidation,
 	findSauceOrThrow,
 	authorizeUser,
 	updateSauce
@@ -44,7 +44,7 @@ router.delete('/:id', findSauceOrThrow, authorizeUser, deleteSauce);
 router.post(
 	'/:id/like',
 	validateLikeData,
-	validationCheck,
+	checkValidation,
 	findSauceOrThrow,
 	updateLikeStatus
 );

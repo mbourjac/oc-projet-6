@@ -1,5 +1,4 @@
 const { body } = require('express-validator');
-const validationCheck = require('../middleware/validation-check');
 
 const validateSignupData = [
 	body('email')
@@ -52,5 +51,4 @@ const validateLoginData = [
 module.exports = {
 	validateSignupData,
 	validateLoginData,
-	validationCheck,
 };

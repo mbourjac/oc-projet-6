@@ -1,5 +1,4 @@
 const { body } = require('express-validator');
-const validationCheck = require('../middleware/validation-check');
 
 const validateSauceData = [
 	body('name')
@@ -83,4 +82,4 @@ const validateLikeData = body('like')
 	.isInt({ min: -1, max: 1 })
 	.withMessage('This value must be a number between -1 and 1 included');
 
-module.exports = { validateSauceData, validateLikeData, validationCheck };
+module.exports = { validateSauceData, validateLikeData };
