@@ -18,20 +18,20 @@ const userSchema = new mongoose.Schema({
 	},
 });
 
-userSchema.pre('save', async function () {
-	const salt = await bcrypt.genSalt(10);
-	this.password = await bcrypt.hash(this.password, salt);
-});
-
-userSchema.methods.comparePassword = async function (candidatePassword) {
-	return bcrypt.compare(candidatePassword, this.password);
-};
-
 userSchema.methods.createJWT = function () {
 	return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, {
 		expiresIn: '24h',
 	});
 };
+
+userSchema.methods.comparePassword = async function (candidatePassword) {
+	return bcrypt.compare(candidatePassword, this.password);
+};
+
+userSchema.pre('save', async function () {
+	const salt = await bcrypt.genSalt(10);
+	this.password = await bcrypt.hash(this.password, salt);
+});
 
 userSchema.plugin(uniqueValidator);
 
