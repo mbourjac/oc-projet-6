@@ -25,7 +25,7 @@ const fileFilter = (req, file, callback) => {
 	}
 };
 
-const multerSetup = multer({
+const multerUpload = multer({
 	fileFilter,
 	storage,
 	limits: {
@@ -33,4 +33,4 @@ const multerSetup = multer({
 	},
 }).single('image');
 
-module.exports = multerSetup;
+module.exports = multerUpload;

@@ -1,6 +1,4 @@
-const multerSetup = require('./multer-setup');
-const fileCheck = require('./file-check');
-const dataCheck = require('./data-check');
-const dataSetup = require('./data-setup');
+const multerUpload = require('./multer.upload');
+const { checkFile, checkData, setupData } = require ('./multer.middlewares');
 
-module.exports = { multerSetup, fileCheck, dataCheck, dataSetup };
+module.exports = { multerUpload, checkFile, checkData, setupData };

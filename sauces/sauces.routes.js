@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { multerSetup, fileCheck, dataCheck, dataSetup } = require('../multer');
+const { multerUpload, checkFile, checkData, setupData } = require('../multer');
 const { findSauceOrThrow, authorizeUser } = require('./sauces.middlewares');
 const {
 	validateSauceData,
@@ -20,10 +20,10 @@ const {
 router.get('/', getAllSauces);
 router.post(
 	'/',
-	multerSetup,
-	fileCheck,
-	dataCheck,
-	dataSetup,
+	multerUpload,
+	checkFile,
+	checkData,
+	setupData,
 	validateSauceData,
 	checkValidation,
 	createSauce
@@ -31,9 +31,9 @@ router.post(
 router.get('/:id', findSauceOrThrow, getSauce);
 router.put(
 	'/:id',
-	multerSetup,
-	dataCheck,
-	dataSetup,
+	multerUpload,
+	checkData,
+	setupData,
 	validateSauceData,
 	checkValidation,
 	findSauceOrThrow,
