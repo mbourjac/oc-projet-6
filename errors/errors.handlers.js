@@ -1,6 +1,6 @@
 const multer = require('multer');
 const { unlink } = require('fs/promises');
-const { HttpError } = require('./errors.http-error');
+const HttpError = require('./errors.http-error');
 
 const fileErrorHandler = async (error, req, res, next) => {
 	if (req.file) {
